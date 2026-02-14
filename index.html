@@ -16,19 +16,6 @@ body {
 }
 section { display:none; padding:30px; position:relative; height:100vh; }
 
-/* Page 1: Hearts & emojis rain */
-.heart, .emoji {
-  position:absolute;
-  font-size:20px;
-  opacity:0.8;
-  animation: fall linear infinite;
-}
-@keyframes fall {
-  0% {transform: translateY(-10vh);}
-  100% {transform: translateY(110vh);}
-}
-#page1 h1 {margin-top:50px; font-size:40px;}
-
 /* Inputs and buttons */
 input[type="text"], input[type="file"] {
   padding:12px;
@@ -48,33 +35,23 @@ button {
   font-size:18px;
 }
 
-/* Final page big heart */
-.bigHeartFinal {
-  font-size:180px;
-  animation: spin 4s linear infinite;
-  margin-top:30px;
-}
-@keyframes spin{
-  0% {transform:rotate(0deg);}
-  100% {transform:rotate(360deg);}
+/* Love message fade-in */
+@keyframes fadeIn {
+  0% {opacity:0; transform:scale(0.8);}
+  100% {opacity:1; transform:scale(1);}
 }
 
-/* Floating hearts for pages 1–5 */
+/* Floating hearts for all pages */
 .floating {
   position:absolute;
   font-size:30px;
   opacity:0.8;
   animation: floatUp linear infinite;
+  pointer-events:none;
 }
 @keyframes floatUp {
   0% {transform: translateY(100vh) rotate(0deg);}
   100% {transform: translateY(-10vh) rotate(360deg);}
-}
-
-/* Fade-in for love message */
-@keyframes fadeIn {
-  0% {opacity:0; transform:scale(0.8);}
-  100% {opacity:1; transform:scale(1);}
 }
 
 /* Page 5 special background */
@@ -93,17 +70,26 @@ button {
   margin-top:20px;
   color:#333;
 }
+.bigHeartFinal {
+  font-size:180px;
+  animation: spin 4s linear infinite;
+  margin-top:30px;
+}
+@keyframes spin{
+  0% {transform:rotate(0deg);}
+  100% {transform:rotate(360deg);}
+}
 </style>
 </head>
 <body>
 
-<!-- Page 1: Intro with hearts & emojis rain -->
+<!-- Page 1: Intro -->
 <section id="page1">
   <h1>💖 Welcome nonosi 💖</h1>
   <button onclick="startMusic()">Next</button>
 </section>
 
-<!-- Page 2: Do you love me -->
+<!-- Page 2: Love question -->
 <section id="page2">
   <h1> ilyass....  Do you love me? 😻</h1>
   <button onclick="loveYes()">Yes 💖</button>
@@ -126,7 +112,7 @@ button {
   <button onclick="submitAnswer()">Next</button>
 </section>
 
-<!-- Page 5: Final Romantic Message -->
+<!-- Page 5: Final message -->
 <section id="page5">
   <h1>Happy Valentine’s Day</h1>
   <h2>Je t'aime</h2>
@@ -158,42 +144,40 @@ const questions=[
 ];
 
 // ===== Functions =====
-function showPage(id){document.querySelectorAll('section').forEach(s=>s.style.display='none'); document.getElementById(id).style.display='block';}
+function showPage(id){
+  document.querySelectorAll('section').forEach(s=>s.style.display='none');
+  document.getElementById(id).style.display='block';
+}
 function nextPage(id){showPage(id);}
 
-// ===== Page 1: start music + next page =====
+// ===== Page 1: start music =====
 function startMusic(){
   document.getElementById("music").play().catch(e=>console.log(e));
   nextPage('page2');
 }
 
-// Page 2: love question with sweet message
+// Page 2: love question
 function loveYes(){
   const msg = document.getElementById('loveMsg');
   msg.textContent = "I knew it… wana tanbghik tkr💍❤️";
   msg.style.display = 'block';
-  
-  for(let i=0;i<20;i++){
-    setTimeout(createFloatingHeart, i*150);
-  }
-  
+  for(let i=0;i<20;i++){ setTimeout(createFloatingHeart, i*150); }
   setTimeout(()=>nextPage('page3'),3000);
 }
 
-// Page 1 rain hearts & emojis
-function createRain(){
+// Page-wide rain for all pages
+function createFloatingHeart(){
   const symbols=['❤️','💖','😻','😺','💞','💗','🌺','💋','💍','🤗','🦋','🍒','💏','🍃','🎀','🧸'];
   const el=document.createElement('div');
-  const sym=symbols[Math.floor(Math.random()*symbols.length)];
-  el.textContent=sym;
-  el.className=(sym==='❤️'||sym==='💖')?'heart':'emoji';
+  el.textContent = symbols[Math.floor(Math.random()*symbols.length)];
+  el.className='floating';
   el.style.left=Math.random()*100+'vw';
-  el.style.fontSize=(10+Math.random()*20)+'px';
-  el.style.animationDuration=(3+Math.random()*5)+'s';
+  el.style.fontSize=(10+Math.random()*25)+'px';
+  el.style.animationDuration=(4+Math.random()*6)+'s';
   document.body.appendChild(el);
-  setTimeout(()=>el.remove(),8000);
+  setTimeout(()=>el.remove(),10000);
 }
-setInterval(createRain,300);
+setInterval(createFloatingHeart,200);
 
 // Step 3: Verify secret code
 document.getElementById("imageInput").addEventListener("change",function(){
@@ -204,7 +188,11 @@ document.getElementById("imageInput").addEventListener("change",function(){
     const hashBuffer=await crypto.subtle.digest('SHA-256',buffer);
     const hashArray=Array.from(new Uint8Array(hashBuffer));
     const hashHex=hashArray.map(b=>b.toString(16).padStart(2,'0')).join('');
-    if(hashHex===correctHash){alert("Code sahih! 🎉 bda daba Quizí."); nextPage('page4'); showQuestion();}
+    if(hashHex===correctHash){
+      alert("Code sahih! 🎉 bda daba Quizí.");
+      nextPage('page4');
+      showQuestion();
+    }
     else{alert("Code ghalt 3awd 3atany ❌");}
   }
   reader.readAsArrayBuffer(file);
@@ -228,19 +216,6 @@ function displayAnswers(){
   const div=document.getElementById("allAnswers");
   div.innerHTML="<h3>Your Answers:</h3><ol>"+userAnswers.map(a=>`<li>${a}</li>`).join('')+"</ol>";
 }
-
-// Floating hearts for all pages
-function createFloatingHeart(){
-  const heart=document.createElement('div');
-  heart.className='floating';
-  heart.style.left=Math.random()*100+'vw';
-  heart.style.fontSize=(20+Math.random()*30)+'px';
-  heart.textContent=Math.random()>0.5?'❤️':'💖';
-  heart.style.animationDuration=(5+Math.random()*5)+'s';
-  document.body.appendChild(heart);
-  setTimeout(()=>heart.remove(),10000);
-}
-setInterval(createFloatingHeart,500);
 
 // ===== Start =====
 showPage('page1');
