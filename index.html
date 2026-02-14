@@ -11,20 +11,24 @@ body {
   background: linear-gradient(to right, #ff9eb0, #ffc0cb);
   color:white;
   overflow:hidden;
+  min-height:100vh;
 }
 section { 
   display:none; 
   padding:30px; 
   position:relative; 
-  height:100vh; 
+  min-height:100vh;
+  width:100%;
+  box-sizing:border-box;
 }
 
 /* Rain hearts & emojis */
 .rainSymbol {
-  position:absolute;
+  position:fixed;
   font-size:20px;
   opacity:0.8;
   animation: fall linear infinite;
+  pointer-events:none;
 }
 @keyframes fall {
   0% {transform: translateY(-10vh);}
@@ -48,6 +52,14 @@ button {
   border-radius:12px;
   cursor:pointer;
   font-size:18px;
+  background-color:#ff6b9d;
+  color:white;
+  font-weight:bold;
+  transition:0.3s;
+}
+button:hover {
+  background-color:#ff1493;
+  transform:scale(1.05);
 }
 
 /* Final page big heart */
@@ -63,10 +75,11 @@ button {
 
 /* Floating hearts for pages 2–5 */
 .floating {
-  position:absolute;
+  position:fixed;
   font-size:30px;
   opacity:0.8;
   animation: floatUp linear infinite;
+  pointer-events:none;
 }
 @keyframes floatUp {
   0% {transform: translateY(100vh) rotate(0deg);}
@@ -78,27 +91,88 @@ button {
   0% {opacity:0; transform:scale(0.8);}
   100% {opacity:1; transform:scale(1);}
 }
+
+.quiz-container {
+  max-width:600px;
+  margin:50px auto;
+  background:rgba(255,255,255,0.1);
+  padding:30px;
+  border-radius:15px;
+}
+
+h1 {
+  font-size:2.5em;
+  text-shadow:2px 2px 4px rgba(0,0,0,0.3);
+}
+
+#question {
+  font-size:24px;
+  margin:30px 0;
+  min-height:60px;
+}
+
+#allAnswers {
+  text-align:left;
+  display:inline-block;
+  background:rgba(255,255,255,0.15);
+  padding:20px;
+  border-radius:10px;
+}
+
+#allAnswers ol {
+  padding-left:20px;
+}
+
+#allAnswers li {
+  margin:10px 0;
+  font-size:16px;
+}
 </style>
 </head>
 <body>
 
 <!-- Pages -->
-<section id="page1"><h1>💖 Welcome nonosi 💖</h1><button onclick="startMusic()">Next</button></section>
-<section id="page2"><h1>Ilyass... Do you love me? 😻</h1>
-<button onclick="loveYes()">Yes 💖</button>
-<button onclick="alert('Try again 😉')">No ❌</button>
-<div id="loveMsg" style="margin-top:20px; font-size:24px; color:#ffebef; display:none; animation: fadeIn 2s;"></div>
+<section id="page1">
+  <h1>💖 Welcome nonosi 💖</h1>
+  <p style="font-size:20px; margin:30px 0;">Khas tkhtr something...</p>
+  <button onclick="startMusic()">Next ➡️</button>
 </section>
-<section id="page3"><h1>Enter secret code 🔒</h1><input type="file" id="imageInput"></section>
-<section id="page4"><h1>Quiz: 3la 3al9tna 💌</h1>
-<div id="question"></div>
-<input type="text" id="answerInput" placeholder="Write your answer here...">
-<br><button onclick="submitAnswer()">Next</button></section>
-<section id="page5"><h1>Ti amo amore mio 💕</h1>
-<div class="bigHeartFinal">💞</div>
-<div id="allAnswers" style="margin-top:30px; font-size:18px;"></div></section>
 
-<audio id="music" src="CinnamonGirl.mp3" loop></audio>
+<section id="page2">
+  <h1>Ilyass... Do you love me? 😻</h1>
+  <div style="margin-top:40px;">
+    <button onclick="loveYes()" style="background-color:#28a745; font-size:24px;">Yes 💖</button>
+    <button onclick="alert('Try again 😉')" style="background-color:#dc3545; font-size:24px;">No ❌</button>
+  </div>
+  <div id="loveMsg" style="margin-top:20px; font-size:24px; color:#ffebef; display:none; animation: fadeIn 2s;"></div>
+</section>
+
+<section id="page3">
+  <h1>Enter secret code 🔒</h1>
+  <p style="font-size:18px; margin:20px 0;">Upload the secret image to unlock the quiz</p>
+  <input type="file" id="imageInput" accept="image/*">
+  <p id="codeStatus" style="margin-top:20px; font-size:16px;"></p>
+</section>
+
+<section id="page4">
+  <div class="quiz-container">
+    <h1>Quiz: 3la 3al9tna 💌</h1>
+    <div id="question"></div>
+    <div id="questionCounter" style="font-size:14px; margin:10px 0;"></div>
+    <input type="text" id="answerInput" placeholder="Write your answer here..." onkeypress="if(event.key==='Enter') submitAnswer()">
+    <br>
+    <button onclick="submitAnswer()">Next ➡️</button>
+  </div>
+</section>
+
+<section id="page5">
+  <h1>Ti amo amore mio 💕</h1>
+  <div class="bigHeartFinal">💞</div>
+  <div id="allAnswers" style="margin-top:30px; font-size:18px;"></div>
+  <button onclick="location.reload()" style="margin-top:30px;">Start Over 🔄</button>
+</section>
+
+<audio id="music" loop></audio>
 
 <script>
 // ===== Variables =====
@@ -125,9 +199,15 @@ function showPage(id){
   document.querySelectorAll('section').forEach(s=>s.style.display='none'); 
   document.getElementById(id).style.display='block';
 }
+
 function nextPage(id){showPage(id);}
+
 function startMusic(){
-  document.getElementById("music").play().catch(e=>console.log(e));
+  // Try to play music - but if file doesn't exist, just continue
+  const audio = document.getElementById("music");
+  if(audio.src) {
+    audio.play().catch(e=>console.log("Audio not available"));
+  }
   nextPage('page2');
 }
 
@@ -136,7 +216,9 @@ function loveYes(){
   const msg = document.getElementById('loveMsg');
   msg.textContent = "I knew it… wana tanbghik tkr💍❤️";
   msg.style.display = 'block';
-  for(let i=0;i<20;i++) setTimeout(createFloatingHeart, i*150);
+  for(let i=0;i<20;i++) {
+    setTimeout(createFloatingHeart, i*150);
+  }
   setTimeout(()=>nextPage('page3'),3000);
 }
 
@@ -155,19 +237,42 @@ function createRain(){
 setInterval(createRain, 300);
 
 // ===== Page 3 secret code =====
-document.getElementById("imageInput").addEventListener("change", function(){
+document.getElementById("imageInput").addEventListener("change", function(e){
+  if(!this.files[0]) return;
   const file = this.files[0];
   const reader = new FileReader();
+  const statusDiv = document.getElementById("codeStatus");
+  
   reader.onload = async function(){
-    const buffer = reader.result;
-    const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashHex = hashArray.map(b=>b.toString(16).padStart(2,'0')).join('');
-    if(hashHex === correctHash){
-      alert("Code sahih! 🎉 bda daba Quizí.");
-      nextPage('page4'); showQuestion();
-    } else {alert("Code ghalt 3awd 3atany ❌");}
+    try {
+      const buffer = reader.result;
+      const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashHex = hashArray.map(b=>b.toString(16).padStart(2,'0')).join('');
+      
+      console.log("File hash:", hashHex);
+      console.log("Expected hash:", correctHash);
+      
+      if(hashHex === correctHash){
+        statusDiv.textContent = "✅ Code sahih! 🎉 bda daba Quiz...";
+        statusDiv.style.color = "#28a745";
+        setTimeout(()=>{nextPage('page4'); showQuestion();}, 1500);
+      } else {
+        statusDiv.textContent = "❌ Code ghalt 3awd 3atany";
+        statusDiv.style.color = "#ff6b9d";
+      }
+    } catch(err) {
+      console.error("Error:", err);
+      statusDiv.textContent = "❌ Error f9dah: " + err.message;
+      statusDiv.style.color = "#ff6b9d";
+    }
   }
+  
+  reader.onerror = function(){
+    statusDiv.textContent = "❌ Error reading file";
+    statusDiv.style.color = "#ff6b9d";
+  }
+  
   reader.readAsArrayBuffer(file);
 });
 
@@ -175,24 +280,42 @@ document.getElementById("imageInput").addEventListener("change", function(){
 function showQuestion(){
   if(currentQ < questions.length){
     document.getElementById("question").textContent = questions[currentQ];
+    document.getElementById("questionCounter").textContent = `Question ${currentQ + 1}/${questions.length}`;
     document.getElementById("answerInput").value = '';
-  } else {nextPage('page5'); displayAnswers();}
+    document.getElementById("answerInput").focus();
+  } else {
+    nextPage('page5'); 
+    displayAnswers();
+  }
 }
+
 function submitAnswer(){
   const ans = document.getElementById("answerInput").value.trim();
-  if(ans===""){alert("Please write your answer 😅"); return;}
+  if(ans===""){
+    alert("Please write your answer 😅");
+    return;
+  }
   userAnswers.push(ans);
   currentQ++;
   showQuestion();
 }
+
 function displayAnswers(){
   const div = document.getElementById("allAnswers");
-  div.innerHTML = "<h3>Your Answers:</h3><ol>"+userAnswers.map(a=>`<li>${a}</li>`).join('')+"</ol>";
+  let html = "<h3>Your Answers 💕:</h3><ol>";
+  userAnswers.forEach((a, i)=>{
+    html += `<li><strong>Q${i+1}:</strong> ${a}</li>`;
+  });
+  html += "</ol>";
+  div.innerHTML = html;
 }
 
 // Floating hearts pages 2–5
 function createFloatingHeart(){
-  if(['page2','page3','page4','page5'].some(id => document.getElementById(id).style.display==='block')){
+  const activePages = ['page2','page3','page4','page5'];
+  const isActive = activePages.some(id => document.getElementById(id).style.display==='block');
+  
+  if(isActive){
     const heart = document.createElement('div');
     heart.className='floating';
     heart.style.left=Math.random()*100+'vw';
