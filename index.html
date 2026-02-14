@@ -12,10 +12,15 @@ body {
   color:white;
   overflow:hidden;
 }
-section { display:none; padding:30px; position:relative; height:100vh; }
+section { 
+  display:none; 
+  padding:30px; 
+  position:relative; 
+  height:100vh; 
+}
 
-/* Page 1: Hearts & emojis rain */
-#page1 .heart, #page1 .emoji {
+/* Rain hearts & emojis */
+.rainSymbol {
   position:absolute;
   font-size:20px;
   opacity:0.8;
@@ -25,7 +30,6 @@ section { display:none; padding:30px; position:relative; height:100vh; }
   0% {transform: translateY(-10vh);}
   100% {transform: translateY(110vh);}
 }
-#page1 h1 {margin-top:50px; font-size:40px;}
 
 /* Inputs and buttons */
 input[type="text"], input[type="file"] {
@@ -78,27 +82,24 @@ button {
 </head>
 <body>
 
-<!-- Page 1: Intro with hearts & emojis rain -->
+<!-- Pages -->
 <section id="page1">
   <h1>💖 Welcome nonosi 💖</h1>
   <button onclick="startMusic()">Next</button>
 </section>
 
-<!-- Page 2: Do you love me -->
 <section id="page2">
-  <h1> ilyass....  Do you love me? 😻</h1>
+  <h1>Ilyass... Do you love me? 😻</h1>
   <button onclick="loveYes()">Yes 💖</button>
   <button onclick="alert('Try again 😉')">No ❌</button>
   <div id="loveMsg" style="margin-top:20px; font-size:24px; color:#ffebef; display:none; animation: fadeIn 2s;"></div>
 </section>
 
-<!-- Page 3: Secret code -->
 <section id="page3">
-  <h1>Enter secret code 🔒 (lcode 3ibara 3an image kayna 3ndk tatjm3 smyti osmytk 9dr achna hiya 🍒🦋)</h1>
+  <h1>Enter secret code 🔒</h1>
   <input type="file" id="imageInput">
 </section>
 
-<!-- Page 4: Quiz -->
 <section id="page4">
   <h1>Quiz: 3la 3al9tna 💌</h1>
   <div id="question"></div>
@@ -107,119 +108,121 @@ button {
   <button onclick="submitAnswer()">Next</button>
 </section>
 
-<!-- Page 5: Final Romantic Message -->
 <section id="page5">
-  <h1>happy valentine day 💕</h1>
-  <div class="bigHeartFinal">🧸</div>
-  <div id="allAnswers" style="margin-top:30px; font-size:18px;"></div>
+  <div style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+    <h1 style="font-size:60px; font-weight:bold; font-family:'cursive', Arial, sans-serif; margin:0;">
+      Happy Valentine’s Day 💖
+    </h1>
+    <div style="font-size:24px; margin-top:20px; font-family:'cursive', Arial, sans-serif;">
+      je t'aime ❤️
+    </div>
+  </div>
 </section>
 
-<!-- Music -->
 <audio id="music" src="CinnamonGirl.mp3" loop></audio>
 
 <script>
 // ===== Variables =====
-let currentQ=0;
-const userAnswers=[];
-const correctHash="e2a5b1910c38aea6f86fb816e955c57fb34b46c4bdcb3e446655871ca785b17a";
-const questions=[
-"chno hiya lhaja li kat3jbk fia bzaf omatatgolahch lia?😻",
-"chnahiya lhaja li tatkhaf tf9dha fhad lrelation dyalna?😺",
-"chnahiya lhda li 3mrha tnsa lik binatna?😊",
-"chno aktr haja katkhlik ths m3aya bl aman?😸",
-"chnahiya lhaja li tatfrhk mli tfkr fiha bini obink?😻",
-"katfkr fmosta9balna?💕",
-"kaths dsa3ada m3aya?💖",
-"chno aktr klma ola tasarof mni kaykhlik tsh b hoob?🙃😻",
-"chna howa lholm li biti th99 m3aya?😻",
-"kaths bhob dyalna?😻🙃",
-"chna howa raeyk fhad lmachkil kamla o dorf lidazt 3lina?🙂😺",
-"3ndk chi haja tsarhni biha mrhba?😻💗"
+let currentQ = 0;
+const userAnswers = [];
+const correctHash = "e2a5b1910c38aea6f86fb816e955c57fb34b46c4bdcb3e446655871ca785b17a";
+const questions = [
+  "chno hiya lhaja li kat3jbk fia bzaf omatatgolahch lia?😻",
+  "chnahiya lhaja li tatkhaf tf9dha fhad lrelation dyalna?😺",
+  "chnahiya lhda li 3mrha tnsa lik binatna?😊",
+  "chno aktr haja katkhlik ths m3aya bl aman?😸",
+  "chnahiya lhaja li tatfrhk mli tfkr fiha bini obink?😻",
+  "katfkr fmosta9balna?💕",
+  "kaths dsa3ada m3aya?💖",
+  "chno aktr klma ola tasarof mni kaykhlik tsh b hoob?🙃😻",
+  "chna howa lholm li biti th99 m3aya?😻",
+  "kaths bhob dyalna?😻🙃",
+  "chna howa raeyk fhad lmachkil kamla o dorf lidazt 3lina?🙂😺",
+  "3ndk chi haja tsarhni biha mrhba?😻💗"
 ];
 
 // ===== Functions =====
-function showPage(id){document.querySelectorAll('section').forEach(s=>s.style.display='none'); document.getElementById(id).style.display='block';}
+function showPage(id){
+  document.querySelectorAll('section').forEach(s=>s.style.display='none'); 
+  document.getElementById(id).style.display='block';
+}
 function nextPage(id){showPage(id);}
-
-// ===== Page 1: start music + next page =====
 function startMusic(){
   document.getElementById("music").play().catch(e=>console.log(e));
   nextPage('page2');
 }
 
-// Page 2: love question with sweet message
+// Page 2 love
 function loveYes(){
-  // Show sweet message first
   const msg = document.getElementById('loveMsg');
   msg.textContent = "I knew it… wana tanbghik tkr💍❤️";
   msg.style.display = 'block';
-  
-  // Floating hearts burst
-  for(let i=0;i<20;i++){
-    setTimeout(createFloatingHeart, i*150);
-  }
-  
-  // Move to next page after 30 seconds
+  for(let i=0;i<20;i++) setTimeout(createFloatingHeart, i*150);
   setTimeout(()=>nextPage('page3'),3000);
 }
 
-// Page 1,2,3,4,5 rain hearts & emojis
+// ===== Rain for all pages =====
 function createRain(){
   const symbols=['❤️','💖','😻','😺','💞','💗','🌺','💋','💍','🤗','🦋','🍒','💏','🍃','🎀','🧸'];
-  const el=document.createElement('div');
-  const sym=symbols[Math.floor(Math.random()*symbols.length)];
-  el.textContent=sym;
-  el.className=(sym==='❤️'||sym==='💖')?'heart':'emoji';
+  const el = document.createElement('div');
+  el.textContent = symbols[Math.floor(Math.random()*symbols.length)];
+  el.className='rainSymbol';
   el.style.left=Math.random()*100+'vw';
-  el.style.fontSize=(10+Math.random()*20)+'px';
+  el.style.fontSize=(10+Math.random()*25)+'px';
   el.style.animationDuration=(3+Math.random()*5)+'s';
-  document.getElementById('page1').appendChild(el);
+  document.body.appendChild(el);
   setTimeout(()=>el.remove(),8000);
 }
-setInterval(createRain,300);
+setInterval(createRain, 300);
 
-// Step 3: Verify secret code
-document.getElementById("imageInput").addEventListener("change",function(){
-  const file=this.files[0];
-  const reader=new FileReader();
-  reader.onload=async function(){
-    const buffer=reader.result;
-    const hashBuffer=await crypto.subtle.digest('SHA-256',buffer);
-    const hashArray=Array.from(new Uint8Array(hashBuffer));
-    const hashHex=hashArray.map(b=>b.toString(16).padStart(2,'0')).join('');
-    if(hashHex===correctHash){alert("Code sahih! 🎉 bda daba Quizí."); nextPage('page4'); showQuestion();}
-    else{alert("Code ghalt 3awd 3atany ❌");}
+// ===== Page 3 secret code =====
+document.getElementById("imageInput").addEventListener("change", function(){
+  const file = this.files[0];
+  const reader = new FileReader();
+  reader.onload = async function(){
+    const buffer = reader.result;
+    const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b=>b.toString(16).padStart(2,'0')).join('');
+    if(hashHex === correctHash){
+      alert("Code sahih! 🎉 bda daba Quizí.");
+      nextPage('page4'); showQuestion();
+    } else {alert("Code ghalt 3awd 3atany ❌");}
   }
   reader.readAsArrayBuffer(file);
 });
 
-// Step 4: Quiz
+// ===== Quiz =====
 function showQuestion(){
-  if(currentQ<questions.length){
-    document.getElementById("question").textContent=questions[currentQ];
-    document.getElementById("answerInput").value='';
+  if(currentQ < questions.length){
+    document.getElementById("question").textContent = questions[currentQ];
+    document.getElementById("answerInput").value = '';
   } else {nextPage('page5'); displayAnswers();}
 }
 function submitAnswer(){
-  const ans=document.getElementById("answerInput").value.trim();
+  const ans = document.getElementById("answerInput").value.trim();
   if(ans===""){alert("Please write your answer 😅"); return;}
   userAnswers.push(ans);
   currentQ++;
   showQuestion();
 }
 function displayAnswers(){
-  const div=document.getElementById("allAnswers");
-  div.innerHTML="<h3>Your Answers:</h3><ol>"+userAnswers.map(a=>`<li>${a}</li>`).join('')+"</ol>";
+  const div = document.createElement('div');
+  div.id = 'allAnswers';
+  div.style.marginTop = '30px';
+  div.style.fontSize = '18px';
+  div.innerHTML = "<h3>Your Answers:</h3><ol>"+userAnswers.map(a=>`<li>${a}</li>`).join('')+"</ol>";
+  document.getElementById('page5').appendChild(div);
 }
 
-// Extra floating hearts for pages 2–5
+// Floating hearts pages 2–5
 function createFloatingHeart(){
-  if(['page2','page3','page4','page5'].some(id=>document.getElementById(id).style.display==='block')){
-    const heart=document.createElement('div');
+  if(['page2','page3','page4','page5'].some(id => document.getElementById(id).style.display==='block')){
+    const heart = document.createElement('div');
     heart.className='floating';
     heart.style.left=Math.random()*100+'vw';
     heart.style.fontSize=(20+Math.random()*30)+'px';
-    heart.textContent=Math.random()>0.5?'❤️':'💖';
+    heart.textContent = Math.random()>0.5 ? '❤️':'💖';
     heart.style.animationDuration=(5+Math.random()*5)+'s';
     document.body.appendChild(heart);
     setTimeout(()=>heart.remove(),10000);
