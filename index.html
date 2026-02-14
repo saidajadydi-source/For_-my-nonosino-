@@ -73,6 +73,9 @@ button {
 </head>
 <body>
 
+<!-- Music -->
+<audio id="music" src="CinnamonGirl.mp3" loop></audio>
+
 <!-- Page 1 -->
 <section id="page1">
   <h1>💖 Welcome nonosi 💖</h1>
@@ -112,12 +115,13 @@ button {
 // ===== Variables =====
 let currentQ=0;
 const userAnswers=[];
+const correctHash="e2a5b1910c38aea6f86fb816e955c57fb34b46c4bdcb3e446655871ca785b17a"; // مثال
 const questions=[
 "chno hiya lhaja li kat3jbk fia bzaf omatatgolahch lia?😻",
 "chnahiya lhaja li tatkhaf tf9dha fhad lrelation dyalna?😺",
 "chnahiya lhda li 3mrha tnsa lik binatna?😊",
 "chno aktr haja katkhlik ths m3aya bl aman?😸",
-"chnahiya lhaja li tatfrhk mli tfkr fiha bini obink?😻",
+"chno hiya lhaja li tatfrhk mli tfkr fiha bini obink?😻",
 "katfkr fmosta9balna?💕",
 "kaths dsa3ada m3aya?💖",
 "chno aktr klma ola tasarof mni kaykhlik tsh b hoob?🙃😻",
@@ -127,9 +131,13 @@ const questions=[
 "3ndk chi haja tsarhni biha mrhba?😻💗"
 ];
 
-// ===== Page navigation =====
+// ===== Page navigation & music =====
 function showPage(id){document.querySelectorAll('section').forEach(s=>s.style.display='none'); document.getElementById(id).style.display='block';}
-function nextPage(id){showPage(id);}
+function nextPage(id){
+  showPage(id);
+  const music=document.getElementById('music');
+  if(music.paused){music.play().catch(e=>console.log("User interaction needed to play music"));}
+}
 
 // ===== Rain hearts & emojis 1–5 =====
 function createRain(){
