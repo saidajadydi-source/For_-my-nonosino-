@@ -2,30 +2,73 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Valentine 💖 Romantic Fireworks</title>
+<title>Valentine Celebration 💖</title>
 <style>
-body {margin:0; font-family:Arial,sans-serif; text-align:center; background: linear-gradient(to right, #ff9eb0, #ffc0cb); color:white; overflow:hidden;}
-section {display:none; padding:30px; position:relative; height:100vh;}
+body {
+  margin:0;
+  font-family:Arial,sans-serif;
+  text-align:center;
+  background: linear-gradient(to right, #ff9eb0, #ffc0cb);
+  color:white;
+  overflow:hidden;
+}
+section { display:none; padding:30px; position:relative; height:100vh; }
 
-/* Rain symbols */
-.rainSymbol {position:absolute; font-size:20px; opacity:0.8; animation: fall linear infinite;}
-@keyframes fall {0%{transform:translateY(-10vh);}100%{transform:translateY(110vh);}}
+/* Rain hearts & emojis */
+.rainSymbol {
+  position:absolute;
+  font-size:20px;
+  opacity:0.8;
+  animation: fall linear infinite;
+}
+@keyframes fall {
+  0% {transform: translateY(-10vh);}
+  100% {transform: translateY(110vh);}
+}
 
-/* Inputs & buttons */
-input[type="text"], input[type="file"] {padding:12px; font-size:18px; width:80%; max-width:400px; margin:10px 0; border-radius:8px; border:none;}
-button {padding:14px 30px; margin:15px; border:none; border-radius:12px; cursor:pointer; font-size:18px;}
+/* Inputs and buttons */
+input[type="text"], input[type="file"] {
+  padding:12px;
+  font-size:18px;
+  width:80%;
+  max-width:400px;
+  margin:10px 0;
+  border-radius:8px;
+  border:none;
+}
+button {
+  padding:14px 30px;
+  margin:15px;
+  border:none;
+  border-radius:12px;
+  cursor:pointer;
+  font-size:18px;
+}
 
-/* Page 5 message */
-#page5Message {font-size:120px; font-family:'Lucida Calligraphy', cursive; font-weight:bold; transform: rotate(-10deg); color:#ff1a75; text-shadow:3px 3px 15px #ffebef; margin-top:50px;}
-#page5SubMessage {font-size:50px; margin-top:20px; color:#ffe6f0; font-weight:bold; font-family:Arial,sans-serif;}
+/* Page 5 big message */
+#page5Message {
+  font-size:120px;
+  font-family:'Lucida Calligraphy', cursive;
+  font-weight:bold;
+  color:#ff1a75;
+  text-shadow:3px 3px 15px #ffebef;
+  margin-top:50px;
+}
+#page5SubMessage {
+  font-size:50px;
+  margin-top:20px;
+  color:#ffe6f0;
+  font-weight:bold;
+}
 
-/* Fireworks */
-.firework {position:absolute; width:6px; height:6px; border-radius:50%; opacity:0.9; animation: explode 1s ease-out forwards;}
-@keyframes explode {0%{transform:scale(1);opacity:1;}100%{transform:scale(8);opacity:0;}}
-
-/* Floating real roses */
-.rose {position:absolute; width:50px; height:50px; animation: floatUp linear infinite;}
-@keyframes floatUp {0%{transform:translateY(100vh) rotate(0deg);}100%{transform:translateY(-10vh) rotate(360deg);}}
+/* Quiz answers container with gradient background */
+#allAnswers {
+  margin-top:30px;
+  font-size:18px;
+  background: linear-gradient(135deg, #ffe6f0, #ffccd9, #ffc0cb);
+  padding:20px;
+  border-radius:15px;
+}
 </style>
 </head>
 <body>
@@ -33,15 +76,14 @@ button {padding:14px 30px; margin:15px; border:none; border-radius:12px; cursor:
 <!-- Page 1 -->
 <section id="page1">
   <h1>💖 Welcome nonosi 💖</h1>
-  <button onclick="startMusic()">Next</button>
+  <button onclick="nextPage('page2')">Next</button>
 </section>
 
 <!-- Page 2 -->
 <section id="page2">
   <h1>Do you love me? 😻</h1>
-  <button onclick="loveYes()">Yes 💖</button>
+  <button onclick="nextPage('page3')">Yes 💖</button>
   <button onclick="alert('Try again 😉')">No ❌</button>
-  <div id="loveMsg" style="margin-top:20px; font-size:24px; color:#ffebef; display:none;"></div>
 </section>
 
 <!-- Page 3 -->
@@ -63,15 +105,13 @@ button {padding:14px 30px; margin:15px; border:none; border-radius:12px; cursor:
 <section id="page5">
   <div id="page5Message">HAPPY VALENTINE’S DAY</div>
   <div id="page5SubMessage">je t’aime 💕</div>
-  <div id="allAnswers" style="margin-top:30px; font-size:18px;"></div>
+  <div id="allAnswers"></div>
 </section>
 
-<audio id="music" src="CinnamonGirl.mp3" loop></audio>
-
 <script>
+// ===== Variables =====
 let currentQ=0;
 const userAnswers=[];
-const correctHash="e2a5b1910c38aea6f86fb816e955c57fb34b46c4bdcb3e446655871ca785b17a";
 const questions=[
 "chno hiya lhaja li kat3jbk fia bzaf omatatgolahch lia?😻",
 "chnahiya lhaja li tatkhaf tf9dha fhad lrelation dyalna?😺",
@@ -91,55 +131,39 @@ const questions=[
 function showPage(id){document.querySelectorAll('section').forEach(s=>s.style.display='none'); document.getElementById(id).style.display='block';}
 function nextPage(id){showPage(id);}
 
-// ===== Music =====
-function startMusic(){document.getElementById("music").play().catch(e=>console.log(e)); nextPage('page2');}
-function loveYes(){const msg=document.getElementById('loveMsg'); msg.textContent="I knew it… I love you more 💍❤️"; msg.style.display='block'; for(let i=0;i<20;i++){setTimeout(createFloatingHeart,i*150);} setTimeout(()=>nextPage('page3'),3000);}
-
 // ===== Rain hearts & emojis 1–5 =====
 function createRain(){
   const symbols=['❤️','💖','😻','😺','💞'];
   const el=document.createElement('div');
-  const sym=symbols[Math.floor(Math.random()*symbols.length)];
-  el.textContent=sym; el.className='rainSymbol';
-  el.style.left=Math.random()*100+'vw'; el.style.fontSize=(10+Math.random()*20)+'px'; el.style.animationDuration=(3+Math.random()*5)+'s';
-  document.querySelectorAll('section').forEach(sec=>{if(sec.style.display!=='none') sec.appendChild(el.cloneNode(true));});
+  el.textContent=symbols[Math.floor(Math.random()*symbols.length)];
+  el.className='rainSymbol';
+  el.style.left=Math.random()*100+'vw';
+  el.style.fontSize=(10+Math.random()*20)+'px';
+  el.style.animationDuration=(3+Math.random()*5)+'s';
+  document.querySelectorAll('section').forEach(sec=>{
+    if(sec.style.display!=='none') sec.appendChild(el.cloneNode(true));
+  });
   setTimeout(()=>el.remove(),8000);
 }
 setInterval(createRain,300);
 
-// ===== Secret code page 3 =====
-document.getElementById("imageInput").addEventListener("change",function(){
-  const file=this.files[0]; const reader=new FileReader();
-  reader.onload=async function(){const buffer=reader.result;
-  const hashBuffer=await crypto.subtle.digest('SHA-256',buffer);
-  const hashArray=Array.from(new Uint8Array(hashBuffer));
-  const hashHex=hashArray.map(b=>b.toString(16).padStart(2,'0')).join('');
-  if(hashHex===correctHash){alert("Code sahih! 🎉 bda daba Quizí."); nextPage('page4'); showQuestion();}
-  else{alert("Code ghalt 3awd 3atany ❌");};
-  }
-  reader.readAsArrayBuffer(file);
-});
-
 // ===== Quiz =====
-function showQuestion(){if(currentQ<questions.length){document.getElementById("question").textContent=questions[currentQ]; document.getElementById("answerInput").value='';} else {nextPage('page5'); displayAnswers(); createFireworks(); createRoses();}}
-function submitAnswer(){const ans=document.getElementById("answerInput").value.trim(); if(ans===""){alert("Please write your answer 😅"); return;} userAnswers.push(ans); currentQ++; showQuestion();}
-function displayAnswers(){const div=document.getElementById("allAnswers"); div.innerHTML="<h3>Your Answers:</h3><ol>"+userAnswers.map(a=>`<li>${a}</li>`).join('')+"</ol>";}
-
-// ===== Floating hearts 1–5 =====
-function createFloatingHeart(){['page1','page2','page3','page4','page5'].forEach(id=>{if(document.getElementById(id).style.display==='block'){const heart=document.createElement('div'); heart.className='rainSymbol'; heart.style.left=Math.random()*100+'vw'; heart.style.fontSize=(20+Math.random()*30)+'px'; heart.textContent=Math.random()>0.5?'❤️':'💖'; heart.style.animationDuration=(5+Math.random()*5)+'s'; document.getElementById(id).appendChild(heart); setTimeout(()=>heart.remove(),10000);}});}
-setInterval(createFloatingHeart,500);
-
-// ===== Fireworks =====
-function createFireworks(){for(let i=0;i<120;i++){setTimeout(()=>{const fw=document.createElement('div'); fw.className='firework'; fw.style.left=Math.random()*100+'vw'; fw.style.top=Math.random()*80+'vh'; fw.style.background=['#ff0000','#ffcc00','#00ff00','#00ccff','#ff00ff','#ffffff','#ffa500'][Math.floor(Math.random()*7)]; document.getElementById('page5').appendChild(fw); setTimeout(()=>fw.remove(),1200);}, i*70);}}
-  
-// ===== Real roses on page 5 =====
-function createRoses(){
-  const roseImages=['rose1.png','rose2.png','rose3.png']; // ضع هنا صور ورد حقيقي PNG
-  for(let i=0;i<50;i++){setTimeout(()=>{
-    const rose=document.createElement('img'); rose.src=roseImages[Math.floor(Math.random()*roseImages.length)];
-    rose.className='rose'; rose.style.left=Math.random()*100+'vw'; rose.style.width='50px'; rose.style.height='50px';
-    document.getElementById('page5').appendChild(rose); setTimeout(()=>rose.remove(),10000);
-  }, i*150);}
+function showQuestion(){
+  if(currentQ<questions.length){
+    document.getElementById("question").textContent=questions[currentQ];
+    document.getElementById("answerInput").value='';
+  } else {showPage('page5'); displayAnswers();}
+}
+function submitAnswer(){
+  const ans=document.getElementById("answerInput").value.trim();
+  if(ans===""){alert("Please write your answer 😅"); return;}
+  userAnswers.push(ans);
+  currentQ++;
+  showQuestion();
+}
+function displayAnswers(){
+  const div=document.getElementById("allAnswers");
+  div.innerHTML="<h3>Your Answers:</h3><ol>"+userAnswers.map(a=>`<li>${a}</li>`).join('')+"</ol>";
 }
 
 // ===== Start =====
