@@ -86,7 +86,7 @@ button {
 
 <!-- Page 2: Do you love me -->
 <section id="page2">
-  <h1>Do you love me? 😻</h1>
+  <h1> ilyass....  Do you love me? 😻</h1>
   <button onclick="loveYes()">Yes 💖</button>
   <button onclick="alert('Try again 😉')">No ❌</button>
   <div id="loveMsg" style="margin-top:20px; font-size:24px; color:#ffebef; display:none; animation: fadeIn 2s;"></div>
@@ -94,7 +94,7 @@ button {
 
 <!-- Page 3: Secret code -->
 <section id="page3">
-  <h1>Enter secret code 🔒</h1>
+  <h1>Enter secret code 🔒 (3ibara 3an image kayna 3ndk tatjm3na odr achna hiya 🍒🦋)</h1>
   <input type="file" id="imageInput">
 </section>
 
@@ -110,7 +110,7 @@ button {
 <!-- Page 5: Final Romantic Message -->
 <section id="page5">
   <h1>Ti amo amore mio 💕</h1>
-  <div class="bigHeartFinal">❤️</div>
+  <div class="bigHeartFinal">💞</div>
   <div id="allAnswers" style="margin-top:30px; font-size:18px;"></div>
 </section>
 
@@ -159,13 +159,13 @@ function loveYes(){
     setTimeout(createFloatingHeart, i*150);
   }
   
-  // Move to next page after 3 seconds
+  // Move to next page after 5 seconds
   setTimeout(()=>nextPage('page3'),3000);
 }
 
 // Page 1 rain hearts & emojis
 function createRain(){
-  const symbols=['❤️','💖','😻','😺','💞'];
+  const symbols=['❤️','💖','😻','😺','💞','💗','🌺','💋','💍','🤗','🦋','🍒','💏','🍃','🎀','🧸'];
   const el=document.createElement('div');
   const sym=symbols[Math.floor(Math.random()*symbols.length)];
   el.textContent=sym;
