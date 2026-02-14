@@ -83,41 +83,20 @@ button {
 <body>
 
 <!-- Pages -->
-<section id="page1">
-  <h1>💖 Welcome nonosi 💖</h1>
-  <button onclick="startMusic()">Next</button>
+<section id="page1"><h1>💖 Welcome nonosi 💖</h1><button onclick="startMusic()">Next</button></section>
+<section id="page2"><h1>Ilyass... Do you love me? 😻</h1>
+<button onclick="loveYes()">Yes 💖</button>
+<button onclick="alert('Try again 😉')">No ❌</button>
+<div id="loveMsg" style="margin-top:20px; font-size:24px; color:#ffebef; display:none; animation: fadeIn 2s;"></div>
 </section>
-
-<section id="page2">
-  <h1>Ilyass... Do you love me? 😻</h1>
-  <button onclick="loveYes()">Yes 💖</button>
-  <button onclick="alert('Try again 😉')">No ❌</button>
-  <div id="loveMsg" style="margin-top:20px; font-size:24px; color:#ffebef; display:none; animation: fadeIn 2s;"></div>
-</section>
-
-<section id="page3">
-  <h1>Enter secret code 🔒</h1>
-  <input type="file" id="imageInput">
-</section>
-
-<section id="page4">
-  <h1>Quiz: 3la 3al9tna 💌</h1>
-  <div id="question"></div>
-  <input type="text" id="answerInput" placeholder="Write your answer here...">
-  <br>
-  <button onclick="submitAnswer()">Next</button>
-</section>
-
-<section id="page5">
-  <div style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-    <h1 style="font-size:60px; font-weight:bold; font-family:'cursive', Arial, sans-serif; margin:0;">
-      Happy Valentine’s Day 💖
-    </h1>
-    <div style="font-size:24px; margin-top:20px; font-family:'cursive', Arial, sans-serif;">
-      je t'aime ❤️
-    </div>
-  </div>
-</section>
+<section id="page3"><h1>Enter secret code 🔒</h1><input type="file" id="imageInput"></section>
+<section id="page4"><h1>Quiz: 3la 3al9tna 💌</h1>
+<div id="question"></div>
+<input type="text" id="answerInput" placeholder="Write your answer here...">
+<br><button onclick="submitAnswer()">Next</button></section>
+<section id="page5"><h1>Ti amo amore mio 💕</h1>
+<div class="bigHeartFinal">💞</div>
+<div id="allAnswers" style="margin-top:30px; font-size:18px;"></div></section>
 
 <audio id="music" src="CinnamonGirl.mp3" loop></audio>
 
@@ -207,12 +186,8 @@ function submitAnswer(){
   showQuestion();
 }
 function displayAnswers(){
-  const div = document.createElement('div');
-  div.id = 'allAnswers';
-  div.style.marginTop = '30px';
-  div.style.fontSize = '18px';
+  const div = document.getElementById("allAnswers");
   div.innerHTML = "<h3>Your Answers:</h3><ol>"+userAnswers.map(a=>`<li>${a}</li>`).join('')+"</ol>";
-  document.getElementById('page5').appendChild(div);
 }
 
 // Floating hearts pages 2–5
