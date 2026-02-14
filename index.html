@@ -1,11 +1,11 @@
 <!DOCTYPE html><html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>For Ilyass 💖 Romantic Rain</title>
+<title>For Ilyass 💖 Romantic Fireworks</title>
 <style>
 body {
   margin:0;
-  font-family:Arial, sans-serif;
+  font-family:'Brush Script MT', cursive;
   text-align:center;
   background: linear-gradient(to right, #ff9eb0, #ffc0cb);
   color:white;
@@ -15,9 +15,9 @@ section { display:none; padding:30px; position:relative; height:100vh; }/* Rain 
 
 /* Inputs and buttons */ input[type="text"], input[type="file"] { padding:12px; font-size:18px; width:80%; max-width:400px; margin:10px 0; border-radius:8px; border:none; } button { padding:14px 30px; margin:15px; border:none; border-radius:12px; cursor:pointer; font-size:18px; }
 
-/* Page 5 - final message */ #page5Message { font-size:80px; font-weight:bold; transform: rotate(-15deg); color:#ff1a75; text-shadow: 2px 2px 10px #ffebef; margin-top:50px; } #page5SubMessage { font-size:40px; margin-top:20px; color:#ffe6f0; }
+/* Page 5 - final message */ #page5Message { font-size:120px; font-family:'Lucida Calligraphy', cursive; font-weight:bold; transform: rotate(-10deg); color:#ff1a75; text-shadow: 3px 3px 15px #ffebef; margin-top:50px; } #page5SubMessage { font-size:50px; margin-top:20px; color:#ffe6f0; font-weight:bold; }
 
-/* Fireworks */ .firework { position:absolute; width:6px; height:6px; border-radius:50%; opacity:0.9; animation: explode 1s ease-out forwards; } @keyframes explode { 0% {transform: scale(1); opacity:1;} 100% {transform: scale(6); opacity:0;} } </style>
+/* Fireworks */ .firework { position:absolute; width:6px; height:6px; border-radius:50%; opacity:0.9; animation: explode 1s ease-out forwards; } @keyframes explode { 0% {transform: scale(1); opacity:1;} 100% {transform: scale(8); opacity:0;} } </style>
 
 </head>
 <body><!-- Page 1 --><section id="page1">
@@ -147,18 +147,18 @@ function createFloatingHeart(){
 }
 setInterval(createFloatingHeart,500);
 
-// ===== Fireworks for page 5 =====
+// ===== Fireworks for page 5 - like New Year =====
 function createFireworks(){
-  for(let i=0;i<50;i++){
+  for(let i=0;i<100;i++){
     setTimeout(()=>{
       const fw=document.createElement('div');
       fw.className='firework';
-      fw.style.left=Math.random()*95+'vw';
-      fw.style.top=Math.random()*70+'vh';
-      fw.style.background=['#ff0000','#ffcc00','#00ff00','#00ccff','#ff00ff'][Math.floor(Math.random()*5)];
+      fw.style.left=Math.random()*100+'vw';
+      fw.style.top=Math.random()*80+'vh';
+      fw.style.background=['#ff0000','#ffcc00','#00ff00','#00ccff','#ff00ff','#ffffff','#ffa500'][Math.floor(Math.random()*7)];
       document.getElementById('page5').appendChild(fw);
-      setTimeout(()=>fw.remove(),1000);
-    }, i*150);
+      setTimeout(()=>fw.remove(),1200);
+    }, i*80);
   }
 }
 
