@@ -551,7 +551,7 @@ function startMusic() {
   
   // Try to load music from common sources
   if (!audio.src) {
-    audio.src = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3";
+    audio.src = "CinnamonGirl.mp3";
   }
   
   audio.play().catch(e => {
@@ -568,9 +568,8 @@ function loveYes() {
   const msg = document.getElementById('loveMsg');
   const messages = [
     "I knew it… wana tanbghik tkr 💍❤️",
-    "Kount kanfkr bik mn lbda! 💕",
     "Ntay 3mri o 7yat dyali 💖",
-    "Rah ghad nkhmsu 7tta tnsa lik! 💘"
+    "ti amo amor 💘",
   ];
   
   msg.textContent = messages[Math.floor(Math.random() * messages.length)];
