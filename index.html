@@ -502,7 +502,7 @@ p {
 
 <section id="page2">
   <h1>Ilyass... Do you love me? 😻</h1>
-  <p style="font-size: 24px; margin: 40px 0 fadeInText 20s ease-in;">gol ah wakha tkon kdba mhm tl3 li moral... 💘</p>
+  <p style="font-size: 24px; margin: 40px 0;">gol ah wakha tkon kdba mhm tl3 li moral... 💘</p>
   <div style="margin-top: 50px;">
     
     <button onclick="loveYes()" style="background: linear-gradient(135deg, #28a745, #20c997); font-size: 24px; padding: 20px 60px;">
@@ -654,9 +654,7 @@ function loveYes() {
   const msg = document.getElementById('loveMsg');
   const messages = [
     "I knew it… wana tanlovek tkr 😻💍",
-    "Ntay 3mri o 7yat dyali 💖",
-    "ti amo amor 🧸🎀",
-  ];
+];
   
   msg.textContent = messages[Math.floor(Math.random() * messages.length)];
   msg.style.display = 'block';
@@ -732,7 +730,7 @@ document.getElementById("imageInput").addEventListener("change", function(e) {
         }, 1500);
       } else {
         statusDiv.textContent = "❌ Code Wrong 😢 3awd 3awtany code image fiha smiytna bjoj...💐🧸";
-        statusDiv.style.color = "#ff6b9d";
+        statusDiv.style.color = "rgba" ;
       }
     } catch(err) {
       console.error("Error:", err);
