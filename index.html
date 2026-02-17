@@ -516,214 +516,121 @@ p {
 </section>
 
 <section id="page3">
-<h1>⚽ Unlock The Word Game 💖</h1>
-<p style="font-size: 20px; margin: 20px 0;">Click the ball to score and reveal the secret word!</p>
+  <h1>⚽ Soccer Word Unlock 💖</h1>
+  <p>Score goals to reveal the secret word! You have 5 attempts.</p>
 
-<div id="gameContainer" style="position: relative; width: 90%; max-width: 600px; margin: auto; height: 300px; border: 2px solid rgba(255,255,255,0.3); border-radius: 15px; background: rgba(255,255,255,0.1); overflow: hidden;">
-  <div id="goalkeeper" style="position: absolute; bottom: 0; left: 50%; width: 80px; height: 120px; background: #ff1493; border-radius: 20px; transform: translateX(-50%);"></div>
-  <div id="ball" style="position: absolute; bottom: 20px; left: 50%; width: 30px; height: 30px; background: #ffff00; border-radius: 50%; transform: translateX(-50%); cursor: pointer;"></div>
-</div>
-
-<p id="gameMessage" style="font-size: 20px; margin-top: 20px; color: #ffebef;"></p>
-<p id="currentWord" style="font-size: 28px; letter-spacing: 5px; margin-top: 10px; color: #ffebef;"></p>
-<p id="attemptsLeft" style="font-size: 18px; margin-top: 10px; color: #ffebef;"></p>
+  <canvas id="soccerField" width="600" height="400" style="border:2px solid #fff; border-radius:10px;"></canvas>
+  
+  <p id="revealedWord" style="font-size: 28px; letter-spacing: 12px; color:#ffebef; margin-top:20px;">
+    _ _ _ _ _
+  </p>
+  <p id="gameMsg" style="color:#ffebef; margin-top:10px;"></p>
+  <p id="attemptsLeft" style="color:#ffebef; margin-top:5px;">Attempts left: 5</p>
+</section>
 
 <script>
-// ===== Variables =====
+const canvas = document.getElementById('soccerField');
+const ctx = canvas.getContext('2d');
+
 const secretWord = "BENTY";
-let revealedWord = Array(secretWord.length).fill('_');
+let revealed = Array(secretWord.length).fill('_');
+let currentLetter = 0;
 let attempts = 5;
-let currentLetterIndex = 0;
 
-const ball = document.getElementById('ball');
-const goalkeeper = document.getElementById('goalkeeper');
-const gameMessage = document.getElementById('gameMessage');
-const currentWordDiv = document.getElementById('currentWord');
-const attemptsDiv = document.getElementById('attemptsLeft');
+let ball = {x:300, y:360, radius:15, dx:0, dy:0, speed:5};
+let goalkeeper = {x:270, y:50, width:60, height:20, speed:3, dir:1};
 
-function updateGameUI() {
-  currentWordDiv.textContent = revealedWord.join(' ');
-  attemptsDiv.textContent = `Attempts left: ${attempts}`;
+function drawField() {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  
+  // Goal area
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(250,30,100,20);
+
+  // Goalkeeper
+  ctx.fillStyle = "#ff1493";
+  ctx.fillRect(goalkeeper.x, goalkeeper.y, goalkeeper.width, goalkeeper.height);
+
+  // Ball
+  ctx.fillStyle = "#fff";
+  ctx.beginPath();
+  ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI*2);
+  ctx.fill();
 }
 
-// Floating flowers
-function createFlowers(count) {
-  const flowerEmojis = ['🌸','🌺','🌷','💐','🌹'];
-  for (let i = 0; i < count; i++) {
-    const flower = document.createElement('div');
-    flower.textContent = flowerEmojis[Math.floor(Math.random() * flowerEmojis.length)];
-    flower.className = 'floating';
-    flower.style.left = (50 + Math.random() * 60 - 30) + 'vw';
-    flower.style.fontSize = (20 + Math.random() * 30) + 'px';
-    flower.style.animationDuration = (4 + Math.random() * 3) + 's';
-    document.body.appendChild(flower);
-    setTimeout(() => flower.remove(), 10000);
+function moveGoalkeeper() {
+  goalkeeper.x += goalkeeper.speed * goalkeeper.dir;
+  if(goalkeeper.x <= 0 || goalkeeper.x + goalkeeper.width >= canvas.width){
+    goalkeeper.dir *= -1;
   }
 }
 
-// Explosion effect
-function createExplosion() {
-  for (let i = 0; i < 10; i++) {
-    const explosion = document.createElement('div');
-    explosion.textContent = '💥';
-    explosion.style.position = 'absolute';
-    explosion.style.left = Math.random() * 90 + '%';
-    explosion.style.top = Math.random() * 60 + '%';
-    explosion.style.fontSize = (20 + Math.random() * 40) + 'px';
-    document.getElementById('gameContainer').appendChild(explosion);
-    setTimeout(() => explosion.remove(), 800);
+function moveBall() {
+  ball.x += ball.dx;
+  ball.y += ball.dy;
+
+  if(ball.dy===0) return;
+
+  // Collision with goalkeeper
+  if(ball.y - ball.radius <= goalkeeper.y + goalkeeper.height &&
+     ball.x >= goalkeeper.x && ball.x <= goalkeeper.x + goalkeeper.width){
+    // Blocked
+    document.getElementById('gameMsg').textContent = "🧤 الحارس صد الكرة!";
+    attempts--;
+    updateAttempts();
+    resetBall();
+    checkGameOver();
+  }
+  else if(ball.y - ball.radius <= 0){
+    // Goal scored
+    document.getElementById('gameMsg').textContent = "🎉 Goal! Letter revealed!";
+    revealed[currentLetter] = secretWord[currentLetter];
+    currentLetter++;
+    document.getElementById('revealedWord').textContent = revealed.join(' ');
+    resetBall();
+    checkWin();
   }
 }
 
-// Goal attempt
-function shootGoal() {
-  const ballX = Math.random() * 400 - 200; 
-  const goalkeeperX = Math.random() * 200 - 100; 
-
-  ball.style.transition = 'all 0.8s ease-in';
-  ball.style.transform = `translate(${ballX}px, -250px)`;
-
-  goalkeeper.style.transition = 'all 0.8s ease-in';
-  goalkeeper.style.transform = `translateX(${goalkeeperX}px)`;
-
-  setTimeout(() => {
-    if (Math.abs(ballX - goalkeeperX) > 50) {
-      if (currentLetterIndex < secretWord.length) {
-        revealedWord[currentLetterIndex] = secretWord[currentLetterIndex].toUpperCase();
-        currentLetterIndex++;
-
-        gameMessage.textContent = `🎉 Goal! Letter revealed 🌸`;
-        createFlowers(5);
-        createExplosion();
-
-        if (currentLetterIndex === secretWord.length) {
-          gameMessage.textContent = `🏆 You revealed the word! BENTY 💖👑`;
-        }
-      }
-    } else {
-      attempts--;
-      gameMessage.textContent = `🧤 الحارس صد الكرة 😿`;
-      if (attempts <= 0) {
-        gameMessage.textContent = `💥 Game over! حاول من جديد ⚽`;
-        setTimeout(() => {
-          revealedWord = Array(secretWord.length).fill('_');
-          attempts = 5;
-          currentLetterIndex = 0;
-          updateGameUI();
-          gameMessage.textContent = '';
-        }, 1500);
-      }
-    }
-
-    ball.style.transition = '';
-    ball.style.transform = 'translateX(-50%)';
-    goalkeeper.style.transition = '';
-    goalkeeper.style.transform = 'translateX(-50%)';
-    updateGameUI();
-  }, 900);
+function resetBall(){
+  ball.x = 300;
+  ball.y = 360;
+  ball.dx = 0;
+  ball.dy = 0;
 }
 
-// Start game
-ball.addEventListener('click', shootGoal);
-updateGameUI();
-</script>
-// ===== Game Setup =====
-const secretWord = "BENTY";
-let revealedWord = Array(secretWord.length).fill('_');
-let attempts = 5;
-let currentLetterIndex = 0;
-
-const ball = document.getElementById('ball');
-const goalkeeper = document.getElementById('goalkeeper');
-const gameMessage = document.getElementById('gameMessage');
-const currentWordDiv = document.getElementById('currentWord');
-const attemptsDiv = document.getElementById('attemptsLeft');
-
-function updateGameUI() {
-  currentWordDiv.textContent = revealedWord.join(' ');
-  attemptsDiv.textContent = `Attempts left: ${attempts}`;
+function gameLoop(){
+  moveGoalkeeper();
+  moveBall();
+  drawField();
+  requestAnimationFrame(gameLoop);
 }
 
-// Floating flowers
-function createFlowers(count) {
-  const flowerEmojis = ['🌸','🌺','🌷','💐','🌹'];
-  for (let i = 0; i < count; i++) {
-    const flower = document.createElement('div');
-    flower.textContent = flowerEmojis[Math.floor(Math.random() * flowerEmojis.length)];
-    flower.className = 'floating';
-    flower.style.left = (50 + Math.random() * 60 - 30) + 'vw';
-    flower.style.fontSize = (20 + Math.random() * 30) + 'px';
-    flower.style.animationDuration = (4 + Math.random() * 3) + 's';
-    document.body.appendChild(flower);
-    setTimeout(() => flower.remove(), 10000);
+function checkWin(){
+  if(currentLetter === secretWord.length){
+    document.getElementById('gameMsg').textContent = "🏆 الكلمة كاملة! الكود: " + secretWord + " 💖";
   }
 }
 
-// Explosion effect
-function createExplosion() {
-  for (let i = 0; i < 10; i++) {
-    const explosion = document.createElement('div');
-    explosion.textContent = '💥';
-    explosion.style.position = 'absolute';
-    explosion.style.left = Math.random() * 90 + '%';
-    explosion.style.top = Math.random() * 60 + '%';
-    explosion.style.fontSize = (20 + Math.random() * 40) + 'px';
-    document.getElementById('gameContainer').appendChild(explosion);
-    setTimeout(() => explosion.remove(), 800);
+function checkGameOver(){
+  if(attempts <= 0 && currentLetter < secretWord.length){
+    document.getElementById('gameMsg').textContent = "😢 Game over! Revealed letters: " + revealed.join(' ');
   }
 }
 
-// Goal attempt
-function shootGoal() {
-  const ballX = Math.random() * 400 - 200; 
-  const goalkeeperX = Math.random() * 200 - 100; 
-
-  ball.style.transition = 'all 0.8s ease-in';
-  ball.style.transform = `translate(${ballX}px, -250px)`;
-
-  goalkeeper.style.transition = 'all 0.8s ease-in';
-  goalkeeper.style.transform = `translateX(${goalkeeperX}px)`;
-
-  setTimeout(() => {
-    if (Math.abs(ballX - goalkeeperX) > 50) {
-      if (currentLetterIndex < secretWord.length) {
-        revealedWord[currentLetterIndex] = secretWord[currentLetterIndex].toUpperCase();
-        currentLetterIndex++;
-
-        gameMessage.textContent = `🎉 Goal! Letter revealed 🌸`;
-        createFlowers(5);
-        createExplosion();
-
-        if (currentLetterIndex === secretWord.length) {
-          gameMessage.textContent = `🏆 You revealed the word! BENTY 💖👑`;
-        }
-      }
-    } else {
-      attempts--;
-      gameMessage.textContent = `🧤 الحارس صد الكرة 😿`;
-      if (attempts <= 0) {
-        gameMessage.textContent = `💥 Game over! حاول من جديد ⚽`;
-        setTimeout(() => {
-          revealedWord = Array(secretWord.length).fill('_');
-          attempts = 5;
-          currentLetterIndex = 0;
-          updateGameUI();
-          gameMessage.textContent = '';
-        }, 1500);
-      }
-    }
-
-    ball.style.transition = '';
-    ball.style.transform = 'translateX(-50%)';
-    goalkeeper.style.transition = '';
-    goalkeeper.style.transform = 'translateX(-50%)';
-    updateGameUI();
-  }, 900);
+function updateAttempts(){
+  document.getElementById('attemptsLeft').textContent = `Attempts left: ${attempts}`;
 }
 
-// Start game
-ball.addEventListener('click', shootGoal);
-updateGameUI();
+// Kick ball
+canvas.addEventListener('click', ()=>{
+  if(ball.dy === 0 && attempts > 0 && currentLetter < secretWord.length){
+    ball.dx = (Math.random()*4 - 2);
+    ball.dy = -ball.speed;
+  }
+});
+
+gameLoop();
 </script>
 
 <section id="page4">
