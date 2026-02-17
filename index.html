@@ -516,10 +516,22 @@ p {
 </section>
 
 <section id="page3">
-  <h1>🔒 Unlock The Quiz 🔐</h1>
-  <p style="font-size: 20px; margin: 30px 0;">code 3ibara 3an image kayna 3ndk tatjm3 binatna, fkr chnahiya 🦋🍒🙊</p>
-  <input type="file" id="imageInput" accept="image/*">
-  <p id="codeStatus" style="margin-top: 30px; font-size: 18px;"></p>
+  <h1>⚽ Soccer Game: كشف كلمة سرّ 💌</h1>
+  <p style="font-size: 20px; margin: 20px 0;">
+    سجل أهداف باش تكشف الحروف ديال كلمة <strong>BENTY</strong> 🌸
+  </p>
+
+  <!-- Game Container -->
+  <div id="gameContainer" style="position: relative; width: 90%; max-width: 600px; margin: auto; height: 300px; border: 2px solid rgba(255,255,255,0.3); border-radius: 15px; background: rgba(255,255,255,0.1); overflow: hidden;">
+    <!-- الحارس -->
+    <div id="goalkeeper" style="position: absolute; bottom: 0; left: 50%; width: 80px; height: 120px; background: #ff1493; border-radius: 20px; transform: translateX(-50%);"></div>
+    <!-- الكرة -->
+    <div id="ball" style="position: absolute; bottom: 20px; left: 50%; width: 30px; height: 30px; background: #ffff00; border-radius: 50%; transform: translateX(-50%); cursor: pointer;"></div>
+  </div>
+
+  <p id="gameMessage" style="font-size: 20px; margin-top: 20px; color: #ffebef;"></p>
+  <p id="currentWord" style="font-size: 28px; letter-spacing: 5px; margin-top: 10px; color: #ffebef;"></p>
+  <p id="attemptsLeft" style="font-size: 18px; margin-top: 10px; color: #ffebef;"></p>
 </section>
 
 <section id="page4">
@@ -559,7 +571,7 @@ p {
 // ===== Variables =====
 let currentQ = 0;
 const userAnswers = [];
-const correctHash = "5f96e486f38df258748936d37f1fb629e477337752de9d2d6fac6fb30918c5f7",
+const correctHash = "5f96e486f38df258748936d37f1fb629e477337752de9d2d6fac6fb30918c5f7";
 const questions = [
   "🎀 Chno hiya lhaja li kat3jbk fia bzaf omatatgolahch lia?😻",
   "🎀Chnahiya lhaja li tatkhaf tf9dha fhad lrelation dyalna?🧸",
