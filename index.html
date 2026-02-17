@@ -516,10 +516,10 @@ p {
 </section>
 
 <section id="page3">
-  <h1>⚽ Soccer Word Unlock 💖</h1>
+  <h1>⚽ Soccer 3D Word Unlock 💖</h1>
   <p>Score goals to reveal the secret word! You have 5 attempts.</p>
 
-  <canvas id="soccerField" width="600" height="400" style="border:2px solid #fff; border-radius:10px;"></canvas>
+  <canvas id="soccerField3D" width="600" height="400" style="border:2px solid #fff; border-radius:10px; cursor:pointer; background:#2c3e50;"></canvas>
   
   <p id="revealedWord" style="font-size: 28px; letter-spacing: 12px; color:#ffebef; margin-top:20px;">
     _ _ _ _ _
@@ -529,7 +529,7 @@ p {
 </section>
 
 <script>
-const canvas = document.getElementById('soccerField');
+const canvas = document.getElementById('soccerField3D');
 const ctx = canvas.getContext('2d');
 
 const secretWord = "BENTY";
@@ -537,100 +537,135 @@ let revealed = Array(secretWord.length).fill('_');
 let currentLetter = 0;
 let attempts = 5;
 
-let ball = {x:300, y:360, radius:15, dx:0, dy:0, speed:5};
+// 3D ball properties
+let ball = {x:300, y:360, radius:15, dx:0, dy:0, speed:6, angle:0};
+// 3D goalkeeper
 let goalkeeper = {x:270, y:50, width:60, height:20, speed:3, dir:1};
 
-function drawField() {
+function drawField3D() {
   ctx.clearRect(0,0,canvas.width,canvas.height);
-  
-  // Goal area
-  ctx.fillStyle = "#fff";
-  ctx.fillRect(250,30,100,20);
 
-  // Goalkeeper
-  ctx.fillStyle = "#ff1493";
-  ctx.fillRect(goalkeeper.x, goalkeeper.y, goalkeeper.width, goalkeeper.height);
+  // Perspective field
+  ctx.fillStyle = "#27ae60";
+  ctx.fillRect(0, 80, canvas.width, canvas.height-80); // grass
 
-  // Ball
+  // Goal 3D illusion
   ctx.fillStyle = "#fff";
   ctx.beginPath();
-  ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI*2);
+  ctx.moveTo(250, 50); 
+  ctx.lineTo(350,50); 
+  ctx.lineTo(340,70);
+  ctx.lineTo(260,70);
+  ctx.closePath();
   ctx.fill();
+
+  // Goalkeeper
+  ctx.save();
+  ctx.fillStyle = "#ff1493";
+  ctx.translate(goalkeeper.x+goalkeeper.width/2, goalkeeper.y+goalkeeper.height/2);
+  ctx.rotate(Math.sin(Date.now()/200)*0.3); // simple sway
+  ctx.fillRect(-goalkeeper.width/2, -goalkeeper.height/2, goalkeeper.width, goalkeeper.height);
+  ctx.restore();
+
+  // Ball 3D
+  ctx.save();
+  ctx.translate(ball.x, ball.y);
+  ctx.rotate(ball.angle);
+  ctx.fillStyle = "#fff";
+  ctx.beginPath();
+  ctx.arc(0,0,ball.radius,0,Math.PI*2);
+  ctx.fill();
+  ctx.strokeStyle="#000";
+  ctx.stroke();
+  ctx.restore();
 }
 
-function moveGoalkeeper() {
+function moveGoalkeeper3D() {
   goalkeeper.x += goalkeeper.speed * goalkeeper.dir;
   if(goalkeeper.x <= 0 || goalkeeper.x + goalkeeper.width >= canvas.width){
     goalkeeper.dir *= -1;
   }
 }
 
-function moveBall() {
+function moveBall3D() {
   ball.x += ball.dx;
   ball.y += ball.dy;
+  ball.angle += 0.2; // rotate ball for 3D effect
 
   if(ball.dy===0) return;
 
   // Collision with goalkeeper
   if(ball.y - ball.radius <= goalkeeper.y + goalkeeper.height &&
      ball.x >= goalkeeper.x && ball.x <= goalkeeper.x + goalkeeper.width){
-    // Blocked
-    document.getElementById('gameMsg').textContent = "🧤 الحارس صد الكرة!";
     attempts--;
-    updateAttempts();
-    resetBall();
-    checkGameOver();
+    document.getElementById('gameMsg').textContent = "🧤 الحارس صد الكرة!";
+    updateAttempts3D();
+    resetBall3D();
+    checkGameOver3D();
   }
-  else if(ball.y - ball.radius <= 0){
-    // Goal scored
-    document.getElementById('gameMsg').textContent = "🎉 Goal! Letter revealed!";
+  // Goal
+  else if(ball.y - ball.radius <= 50){
     revealed[currentLetter] = secretWord[currentLetter];
     currentLetter++;
     document.getElementById('revealedWord').textContent = revealed.join(' ');
-    resetBall();
-    checkWin();
+    document.getElementById('gameMsg').textContent = "🎉 Goal! Letter revealed!";
+    resetBall3D();
+    checkWin3D();
+  }
+  // Out of field
+  else if(ball.y + ball.radius >= canvas.height){
+    attempts--;
+    document.getElementById('gameMsg').textContent = "⚠️ Missed! Try again.";
+    updateAttempts3D();
+    resetBall3D();
+    checkGameOver3D();
   }
 }
 
-function resetBall(){
+function resetBall3D(){
   ball.x = 300;
   ball.y = 360;
   ball.dx = 0;
   ball.dy = 0;
+  ball.angle = 0;
 }
 
-function gameLoop(){
-  moveGoalkeeper();
-  moveBall();
-  drawField();
-  requestAnimationFrame(gameLoop);
+function updateAttempts3D(){
+  document.getElementById('attemptsLeft').textContent = `Attempts left: ${attempts}`;
 }
 
-function checkWin(){
+function checkWin3D(){
   if(currentLetter === secretWord.length){
     document.getElementById('gameMsg').textContent = "🏆 الكلمة كاملة! الكود: " + secretWord + " 💖";
   }
 }
 
-function checkGameOver(){
+function checkGameOver3D(){
   if(attempts <= 0 && currentLetter < secretWord.length){
     document.getElementById('gameMsg').textContent = "😢 Game over! Revealed letters: " + revealed.join(' ');
   }
 }
 
-function updateAttempts(){
-  document.getElementById('attemptsLeft').textContent = `Attempts left: ${attempts}`;
-}
-
 // Kick ball
-canvas.addEventListener('click', ()=>{
-  if(ball.dy === 0 && attempts > 0 && currentLetter < secretWord.length){
-    ball.dx = (Math.random()*4 - 2);
-    ball.dy = -ball.speed;
+canvas.addEventListener('click', (e)=>{
+  if(ball.dy===0 && attempts>0 && currentLetter < secretWord.length){
+    const rect = canvas.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const clickY = e.clientY - rect.top;
+    const angle = Math.atan2(clickY - ball.y, clickX - ball.x);
+    ball.dx = ball.speed * Math.cos(angle);
+    ball.dy = ball.speed * Math.sin(angle);
   }
 });
 
-gameLoop();
+function gameLoop3D(){
+  moveGoalkeeper3D();
+  moveBall3D();
+  drawField3D();
+  requestAnimationFrame(gameLoop3D);
+}
+
+gameLoop3D();
 </script>
 
 <section id="page4">
