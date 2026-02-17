@@ -516,39 +516,39 @@ p {
 </section>
 
 <section id="page3">
-  <h2>⚽ Score To Reveal The Secret 💖</h2>
-  <canvas id="game" width="600" height="400"></canvas>
-  <div id="popupLetter"></div>
-  <div id="msg" style="margin-top:10px;"></div>
+  <section id="page3" style="position:relative;text-align:center;">
+
+<h2>⚽ Score To Unlock The Secret 💖</h2>
+
+<canvas id="game" width="600" height="400"
+style="background:#27ae60;border-radius:10px;cursor:pointer;">
+</canvas>
+
+<div id="popupLetter"
+style="position:absolute;top:40%;left:50%;
+transform:translate(-50%,-50%);
+font-size:80px;font-weight:bold;
+color:white;text-shadow:0 0 20px pink;
+display:none;">
+</div>
+
+<div id="msg" style="margin-top:10px;"></div>
+
+<!-- CODE INPUT (hidden at start) -->
+<div id="codeBox" style="display:none;margin-top:20px;">
+  <input type="text" id="codeInput"
+  placeholder="Enter the code..."
+  style="padding:10px;font-size:18px;text-align:center;">
+  
+  <button onclick="checkCode()"
+  style="padding:10px 15px;font-size:16px;">
+  Unlock 💖
+  </button>
+
+  <div id="result" style="margin-top:10px;"></div>
+</div>
+
 </section>
-
-<style>
-#game{
-  background:#27ae60;
-  margin-top:20px;
-  border-radius:10px;
-  cursor:pointer;
-}
-
-#popupLetter{
-  position:absolute;
-  top:40%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  font-size:80px;
-  font-weight:bold;
-  color:white;
-  text-shadow:0 0 20px pink;
-  display:none;
-  animation:pop 2s ease forwards;
-}
-
-@keyframes pop{
-  0%{transform:translate(-50%,-50%) scale(0.5);opacity:0;}
-  30%{transform:translate(-50%,-60%) scale(1.2);opacity:1;}
-  100%{transform:translate(-50%,-80%) scale(1);opacity:0;}
-}
-</style>
 
 <script>
 const canvas = document.getElementById("game");
@@ -557,6 +557,7 @@ const ctx = canvas.getContext("2d");
 const secret="BENTY";
 let index=0;
 let attempts=5;
+let gameFinished=false;
 
 let ball={x:300,y:330,r:12,dx:0,dy:0,moving:false,scale:1};
 let keeper={x:260,y:70,w:80,h:20,targetX:260};
@@ -567,12 +568,15 @@ function draw(){
   ctx.fillStyle="#27ae60";
   ctx.fillRect(0,0,600,400);
 
+  // goal
   ctx.fillStyle="#fff";
   ctx.fillRect(220,50,160,10);
 
+  // keeper
   ctx.fillStyle="red";
   ctx.fillRect(keeper.x,keeper.y,keeper.w,keeper.h);
 
+  // ball
   ctx.save();
   ctx.translate(ball.x,ball.y);
   ctx.scale(ball.scale,ball.scale);
@@ -593,12 +597,21 @@ function update(){
     if(ball.y<=80){
       ball.moving=false;
 
-      if(ball.x>keeper.x && ball.x<keeper.x+keeper.w){
-        document.getElementById("msg").innerText="🧤 Saved!";
+      const goalLeft = 220;
+      const goalRight = 380;
+
+      if(ball.x > goalLeft && ball.x < goalRight){
+
+        if(ball.x>keeper.x && ball.x<keeper.x+keeper.w){
+          document.getElementById("msg").innerText="🧤 Saved!";
+        }else{
+          showLetter(secret[index]);
+          index++;
+          document.getElementById("msg").innerText="⚽ GOOOAL!";
+        }
+
       }else{
-        showLetter(secret[index]);
-        index++;
-        document.getElementById("msg").innerText="⚽ GOOOAL!";
+        document.getElementById("msg").innerText="❌ Outside!";
       }
 
       reset();
@@ -630,17 +643,11 @@ function reset(){
   attempts--;
 
   if(index===5){
-    document.getElementById("msg").innerText="💖 You Win 💖";
-    setTimeout(()=>{
-      restartGame();
-    },2000);
+    endGame(true);
   }
 
   if(attempts===0 && index<5){
-    document.getElementById("msg").innerText="Game Over 😢 Restarting...";
-    setTimeout(()=>{
-      restartGame();
-    },2000);
+    endGame(false);
   }
 
   ball.x=300;
@@ -650,13 +657,30 @@ function reset(){
   ball.dy=0;
 }
 
-function restartGame(){
-  index=0;
-  attempts=5;
+function endGame(win){
+  gameFinished=true;
+
+  if(win){
+    document.getElementById("msg").innerText="💖 All letters revealed! Enter the code!";
+  }else{
+    document.getElementById("msg").innerText="Game Over 😢 Try the code anyway!";
+  }
+
+  document.getElementById("codeBox").style.display="block";
+}
+
+function checkCode(){
+  const input=document.getElementById("codeInput").value.toUpperCase();
+
+  if(input==="BENTY"){
+    document.getElementById("result").innerHTML="🎉 Correct Code 💖";
+  }else{
+    document.getElementById("result").innerHTML="❌ Wrong Code";
+  }
 }
 
 canvas.addEventListener("click",(e)=>{
-  if(ball.moving) return;
+  if(ball.moving || gameFinished) return;
 
   const rect=canvas.getBoundingClientRect();
   const x=e.clientX-rect.left;
