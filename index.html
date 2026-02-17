@@ -534,6 +534,106 @@ p {
   <p id="attemptsLeft" style="font-size: 18px; margin-top: 10px; color: #ffebef;"></p>
 </section>
 
+<script>
+// ===== Game Setup =====
+const secretWord = "BENTY";
+let revealedWord = Array(secretWord.length).fill('_');
+let attempts = 5;
+let currentLetterIndex = 0;
+
+const ball = document.getElementById('ball');
+const goalkeeper = document.getElementById('goalkeeper');
+const gameMessage = document.getElementById('gameMessage');
+const currentWordDiv = document.getElementById('currentWord');
+const attemptsDiv = document.getElementById('attemptsLeft');
+
+function updateGameUI() {
+  currentWordDiv.textContent = revealedWord.join(' ');
+  attemptsDiv.textContent = `Attempts left: ${attempts}`;
+}
+
+// Floating flowers
+function createFlowers(count) {
+  const flowerEmojis = ['🌸','🌺','🌷','💐','🌹'];
+  for (let i = 0; i < count; i++) {
+    const flower = document.createElement('div');
+    flower.textContent = flowerEmojis[Math.floor(Math.random() * flowerEmojis.length)];
+    flower.className = 'floating';
+    flower.style.left = (50 + Math.random() * 60 - 30) + 'vw';
+    flower.style.fontSize = (20 + Math.random() * 30) + 'px';
+    flower.style.animationDuration = (4 + Math.random() * 3) + 's';
+    document.body.appendChild(flower);
+    setTimeout(() => flower.remove(), 10000);
+  }
+}
+
+// Explosion effect
+function createExplosion() {
+  for (let i = 0; i < 10; i++) {
+    const explosion = document.createElement('div');
+    explosion.textContent = '💥';
+    explosion.style.position = 'absolute';
+    explosion.style.left = Math.random() * 90 + '%';
+    explosion.style.top = Math.random() * 60 + '%';
+    explosion.style.fontSize = (20 + Math.random() * 40) + 'px';
+    document.getElementById('gameContainer').appendChild(explosion);
+    setTimeout(() => explosion.remove(), 800);
+  }
+}
+
+// Goal attempt
+function shootGoal() {
+  const ballX = Math.random() * 400 - 200; 
+  const goalkeeperX = Math.random() * 200 - 100; 
+
+  ball.style.transition = 'all 0.8s ease-in';
+  ball.style.transform = `translate(${ballX}px, -250px)`;
+
+  goalkeeper.style.transition = 'all 0.8s ease-in';
+  goalkeeper.style.transform = `translateX(${goalkeeperX}px)`;
+
+  setTimeout(() => {
+    if (Math.abs(ballX - goalkeeperX) > 50) {
+      if (currentLetterIndex < secretWord.length) {
+        revealedWord[currentLetterIndex] = secretWord[currentLetterIndex].toUpperCase();
+        currentLetterIndex++;
+
+        gameMessage.textContent = `🎉 Goal! Letter revealed 🌸`;
+        createFlowers(5);
+        createExplosion();
+
+        if (currentLetterIndex === secretWord.length) {
+          gameMessage.textContent = `🏆 You revealed the word! BENTY 💖👑`;
+        }
+      }
+    } else {
+      attempts--;
+      gameMessage.textContent = `🧤 الحارس صد الكرة 😿`;
+      if (attempts <= 0) {
+        gameMessage.textContent = `💥 Game over! حاول من جديد ⚽`;
+        setTimeout(() => {
+          revealedWord = Array(secretWord.length).fill('_');
+          attempts = 5;
+          currentLetterIndex = 0;
+          updateGameUI();
+          gameMessage.textContent = '';
+        }, 1500);
+      }
+    }
+
+    ball.style.transition = '';
+    ball.style.transform = 'translateX(-50%)';
+    goalkeeper.style.transition = '';
+    goalkeeper.style.transform = 'translateX(-50%)';
+    updateGameUI();
+  }, 900);
+}
+
+// Start game
+ball.addEventListener('click', shootGoal);
+updateGameUI();
+</script>
+
 <section id="page4">
   <div class="quiz-container">
     <h1>Quiz: 3la 3al9tna 💌</h1>
