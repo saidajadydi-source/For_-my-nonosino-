@@ -515,59 +515,55 @@ p {
   <div id="loveMsg" style="margin-top: 40px; font-size: 28px; color: #ffebef; display: none;"></div>
 </section>
 
-<section id="page3" style="position:relative;text-align:center;">
+  <section id="page3" style="position:relative;text-align:center;">
 
-  <h2>⚽ Score To Unlock The Secret 💖</h2>
+<h2>⚽ Penalty Challenge 💖</h2>
 
-<canvas id="game" width="600" height="400"
-style="background:#27ae60;border-radius:10px;cursor:pointer;">
+<canvas id="penaltyGame" width="600" height="400"
+style="background:#1e8f3e;border-radius:10px;cursor:pointer;">
 </canvas>
 
-<div id="popupLetter"
+<div id="letterPop"
 style="position:absolute;top:40%;left:50%;
 transform:translate(-50%,-50%);
-font-size:80px;font-weight:bold;
-color:white;text-shadow:0 0 20px pink;
+font-size:70px;font-weight:bold;
+color:white;text-shadow:0 0 15px pink;
 display:none;">
 </div>
 
-<div id="msg" style="margin-top:10px;"></div>
+<div id="info" style="margin-top:10px;"></div>
 
-<!-- CODE INPUT (hidden at start) -->
-<div id="codeBox" style="display:none;margin-top:20px;">
+<div id="codeArea" style="display:none;margin-top:20px;">
   <input type="text" id="codeInput"
-  placeholder="Enter the code..."
-  style="padding:10px;font-size:18px;text-align:center;">
-  
-  <button onclick="checkCode()"
-  style="padding:10px 15px;font-size:16px;">
-  Unlock 💖
-  </button>
-
-  <div id="result" style="margin-top:10px;"></div>
+  placeholder="Enter Code"
+  style="padding:8px;font-size:18px;text-align:center;">
+  <button onclick="verifyCode()" style="padding:8px 12px;">Unlock</button>
+  <div id="codeResult" style="margin-top:10px;"></div>
 </div>
 
 </section>
 
 <script>
-const canvas = document.getElementById("game");
+(function(){
+
+const canvas = document.getElementById("penaltyGame");
 const ctx = canvas.getContext("2d");
 
-const secret="BENTY";
-let index=0;
-let attempts=5;
-let gameFinished=false;
+const secret = "BENTY";
+let letterIndex = 0;
+let attempts = 5;
+let finished = false;
 
-let ball={x:300,y:330,r:12,dx:0,dy:0,moving:false,scale:1};
-let keeper={x:260,y:70,w:80,h:20,targetX:260};
+let ball = {x:300,y:330,r:10,dx:0,dy:0,moving:false};
+let keeper = {x:260,y:70,w:80,h:20,target:260};
 
 function draw(){
   ctx.clearRect(0,0,600,400);
 
-  ctx.fillStyle="#27ae60";
+  ctx.fillStyle="#1e8f3e";
   ctx.fillRect(0,0,600,400);
 
-  // goal
+  // goal bar
   ctx.fillStyle="#fff";
   ctx.fillRect(220,50,160,10);
 
@@ -576,127 +572,100 @@ function draw(){
   ctx.fillRect(keeper.x,keeper.y,keeper.w,keeper.h);
 
   // ball
-  ctx.save();
-  ctx.translate(ball.x,ball.y);
-  ctx.scale(ball.scale,ball.scale);
   ctx.beginPath();
   ctx.fillStyle="white";
-  ctx.arc(0,0,ball.r,0,Math.PI*2);
+  ctx.arc(ball.x,ball.y,ball.r,0,Math.PI*2);
   ctx.fill();
   ctx.stroke();
-  ctx.restore();
 }
 
 function update(){
   if(ball.moving){
     ball.x+=ball.dx;
     ball.y+=ball.dy;
-    ball.scale = 1 + (330-ball.y)/300;
 
     if(ball.y<=80){
       ball.moving=false;
 
-      const goalLeft = 220;
-      const goalRight = 380;
+      const left=220;
+      const right=380;
 
-      if(ball.x > goalLeft && ball.x < goalRight){
+      if(ball.x>left && ball.x<right){
 
         if(ball.x>keeper.x && ball.x<keeper.x+keeper.w){
-          document.getElementById("msg").innerText="🧤 Saved!";
+          document.getElementById("info").innerText="🧤 Saved!";
         }else{
-          showLetter(secret[index]);
-          index++;
-          document.getElementById("msg").innerText="⚽ GOOOAL!";
+          showLetter(secret[letterIndex]);
+          letterIndex++;
+          document.getElementById("info").innerText="⚽ GOAL!";
         }
 
       }else{
-        document.getElementById("msg").innerText="❌ Outside!";
+        document.getElementById("info").innerText="❌ Miss!";
       }
 
       reset();
     }
-
-    if(ball.y>400){
-      ball.moving=false;
-      reset();
-    }
   }
 
-  keeper.x+=(keeper.targetX-keeper.x)*0.1;
+  keeper.x += (keeper.target-keeper.x)*0.1;
 
   draw();
   requestAnimationFrame(update);
 }
 
-function showLetter(letter){
-  const popup=document.getElementById("popupLetter");
-  popup.innerText=letter;
-  popup.style.display="block";
-
-  setTimeout(()=>{
-    popup.style.display="none";
-  },2000);
+function showLetter(l){
+  const pop=document.getElementById("letterPop");
+  pop.innerText=l;
+  pop.style.display="block";
+  setTimeout(()=>{ pop.style.display="none"; },2000);
 }
 
 function reset(){
   attempts--;
 
-  if(index===5){
-    endGame(true);
-  }
-
-  if(attempts===0 && index<5){
-    endGame(false);
+  if(letterIndex===5 || attempts===0){
+    finished=true;
+    document.getElementById("codeArea").style.display="block";
+    document.getElementById("info").innerText="Enter the code 💖";
   }
 
   ball.x=300;
   ball.y=330;
-  ball.scale=1;
   ball.dx=0;
   ball.dy=0;
 }
 
-function endGame(win){
-  gameFinished=true;
-
-  if(win){
-    document.getElementById("msg").innerText="💖 All letters revealed! Enter the code!";
-  }else{
-    document.getElementById("msg").innerText="Game Over 😢 Try the code anyway!";
-  }
-
-  document.getElementById("codeBox").style.display="block";
-}
-
-function checkCode(){
-  const input=document.getElementById("codeInput").value.toUpperCase();
-
-  if(input==="BENTY"){
-    document.getElementById("result").innerHTML="🎉 Correct Code 💖";
-  }else{
-    document.getElementById("result").innerHTML="❌ Wrong Code";
-  }
-}
-
-canvas.addEventListener("click",(e)=>{
-  if(ball.moving || gameFinished) return;
+canvas.addEventListener("click",function(e){
+  if(ball.moving || finished) return;
 
   const rect=canvas.getBoundingClientRect();
   const x=e.clientX-rect.left;
   const y=e.clientY-rect.top;
 
   const angle=Math.atan2(y-ball.y,x-ball.x);
-  ball.dx=6*Math.cos(angle);
-  ball.dy=6*Math.sin(angle);
+  ball.dx=5*Math.cos(angle);
+  ball.dy=5*Math.sin(angle);
   ball.moving=true;
 
-  const choice=Math.random();
-  if(choice<0.33) keeper.targetX=220;
-  else if(choice<0.66) keeper.targetX=260;
-  else keeper.targetX=300;
+  const r=Math.random();
+  if(r<0.33) keeper.target=220;
+  else if(r<0.66) keeper.target=260;
+  else keeper.target=300;
 });
 
+window.verifyCode=function(){
+  const val=document.getElementById("codeInput").value.toUpperCase();
+  if(val==="BENTY"){
+    document.getElementById("codeResult").innerHTML="🎉 Correct 💖";
+  }else{
+    document.getElementById("codeResult").innerHTML="❌ Wrong Code";
+  }
+}
+
 update();
+
+})();
 </script>
 
 <section id="page4">
