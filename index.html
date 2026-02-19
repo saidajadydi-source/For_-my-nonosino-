@@ -3,11 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <title>For Ilyass 💖 Romantic Rain</title>
+  
 <style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+#puzzleContainer{
+  width:350px;
+  height:350px;
+  margin:20px auto;
+  display:grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(7, 1fr);
+  gap:2px;
+}
+
+.piece{
+  background-image:url('image.jpg');
+  background-size:350px 350px;
+  cursor:pointer;
 }
 
 body {
@@ -515,159 +526,21 @@ p {
   <div id="loveMsg" style="margin-top: 40px; font-size: 28px; color: #ffebef; display: none;"></div>
 </section>
 
-  <section id="page3" style="position:relative;text-align:center;">
+  <section id="page3" class="page">
 
-<h2>⚽ Penalty Challenge 💖</h2>
+<h2 style="font-size:40px;color:#ff4d88;">🧩 Challenge Time 😈</h2>
+<p style="font-size:22px;">Khassek tkmel tswira 9bel 2 d9aye9 ⏳💖</p>
 
-<canvas id="penaltyGame" width="600" height="400"
-style="background:#1e8f3e;border-radius:10px;cursor:pointer;">
-</canvas>
-
-<div id="letterPop"
-style="position:absolute;top:40%;left:50%;
-transform:translate(-50%,-50%);
-font-size:70px;font-weight:bold;
-color:white;text-shadow:0 0 15px pink;
-display:none;">
+<div id="timer" style="font-size:28px;margin:15px;color:#e6005c;">
+  ⏳ 02:00
 </div>
 
-<div id="info" style="margin-top:10px;"></div>
+<div id="puzzleContainer"></div>
 
-<div id="codeArea" style="display:none;margin-top:20px;">
-  <input type="text" id="codeInput"
-  placeholder="Enter Code"
-  style="padding:8px;font-size:18px;text-align:center;">
-  <button onclick="verifyCode()" style="padding:8px 12px;">Unlock</button>
-  <div id="codeResult" style="margin-top:10px;"></div>
-</div>
+<div id="puzzleMessage" style="font-size:24px;margin-top:20px;"></div>
 
 </section>
-
-<script>
-(function(){
-
-const canvas = document.getElementById("penaltyGame");
-const ctx = canvas.getContext("2d");
-
-const secret = "BENTY";
-let letterIndex = 0;
-let attempts = 5;
-let finished = false;
-
-let ball = {x:300,y:330,r:10,dx:0,dy:0,moving:false};
-let keeper = {x:260,y:70,w:80,h:20,target:260};
-
-function draw(){
-  ctx.clearRect(0,0,600,400);
-
-  ctx.fillStyle="#1e8f3e";
-  ctx.fillRect(0,0,600,400);
-
-  // goal bar
-  ctx.fillStyle="#fff";
-  ctx.fillRect(220,50,160,10);
-
-  // keeper
-  ctx.fillStyle="red";
-  ctx.fillRect(keeper.x,keeper.y,keeper.w,keeper.h);
-
-  // ball
-  ctx.beginPath();
-  ctx.fillStyle="white";
-  ctx.arc(ball.x,ball.y,ball.r,0,Math.PI*2);
-  ctx.fill();
-  ctx.stroke();
-}
-
-function update(){
-  if(ball.moving){
-    ball.x+=ball.dx;
-    ball.y+=ball.dy;
-
-    if(ball.y<=80){
-      ball.moving=false;
-
-      const left=220;
-      const right=380;
-
-      if(ball.x>left && ball.x<right){
-
-        if(ball.x>keeper.x && ball.x<keeper.x+keeper.w){
-          document.getElementById("info").innerText="🧤 Saved!";
-        }else{
-          showLetter(secret[letterIndex]);
-          letterIndex++;
-          document.getElementById("info").innerText="⚽ GOAL!";
-        }
-
-      }else{
-        document.getElementById("info").innerText="❌ Miss!";
-      }
-
-      reset();
-    }
-  }
-
-  keeper.x += (keeper.target-keeper.x)*0.1;
-
-  draw();
-  requestAnimationFrame(update);
-}
-
-function showLetter(l){
-  const pop=document.getElementById("letterPop");
-  pop.innerText=l;
-  pop.style.display="block";
-  setTimeout(()=>{ pop.style.display="none"; },2000);
-}
-
-function reset(){
-  attempts--;
-
-  if(letterIndex===5 || attempts===0){
-    finished=true;
-    document.getElementById("codeArea").style.display="block";
-    document.getElementById("info").innerText="Enter the code 💖";
-  }
-
-  ball.x=300;
-  ball.y=330;
-  ball.dx=0;
-  ball.dy=0;
-}
-
-canvas.addEventListener("click",function(e){
-  if(ball.moving || finished) return;
-
-  const rect=canvas.getBoundingClientRect();
-  const x=e.clientX-rect.left;
-  const y=e.clientY-rect.top;
-
-  const angle=Math.atan2(y-ball.y,x-ball.x);
-  ball.dx=5*Math.cos(angle);
-  ball.dy=5*Math.sin(angle);
-  ball.moving=true;
-
-  const r=Math.random();
-  if(r<0.33) keeper.target=220;
-  else if(r<0.66) keeper.target=260;
-  else keeper.target=300;
-});
-
-window.verifyCode=function(){
-  const val=document.getElementById("codeInput").value.toUpperCase();
-  if(val==="BENTY"){
-    document.getElementById("codeResult").innerHTML="🎉 Correct 💖";
-  }else{
-    document.getElementById("codeResult").innerHTML="❌ Wrong Code";
-  }
-}
-
-update();
-
-})();
-</script>
-
+  
 <section id="page4">
   <div class="quiz-container">
     <h1>Quiz: 3la 3al9tna 💌</h1>
@@ -839,57 +712,90 @@ function createRain() {
 setInterval(createRain, 180);
 
 // ===== Page 3: Secret Code =====
-document.getElementById("imageInput").addEventListener("change", function(e) {
-  if (!this.files[0]) return;
-  
-  const file = this.files[0];
-  const reader = new FileReader();
-  const statusDiv = document.getElementById("codeStatus");
-  
-  reader.onload = async function() {
-    try {
-      const buffer = reader.result;
-      const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-      
-      console.log("File hash:", hashHex);
-      console.log("Expected hash:", correctHash);
-      
-      if (hashHex === correctHash) {
-        statusDiv.textContent = "✅ Code Correct! 🎉 Quiz 🙊...";
-        statusDiv.style.color = "#28a745";
-        
-        // Create celebration sparkles and rain
-        for (let i = 0; i < 60; i++) {
-          setTimeout(createSparkle, i * 30);
-        }
-        for (let i = 0; i < 40; i++) {
-          setTimeout(createRain, i * 40);
-        }
-        
-        setTimeout(() => {
-          nextPage('page4');
-          showQuestion();
-        }, 1500);
-      } else {
-        statusDiv.textContent = "❌ Code Wrong 😢 3awd 3awtany code image fiha smiytna bjoj...💐🧸";
-        statusDiv.style.color = "rgba" ;
-      }
-    } catch(err) {
-      console.error("Error:", err);
-      statusDiv.textContent = "❌ Error: " + err.message;
-      statusDiv.style.color = "#ff6b9d";
+const puzzleContainer = document.getElementById("puzzleContainer");
+const message = document.getElementById("puzzleMessage");
+const timerDisplay = document.getElementById("timer");
+
+let firstPiece = null;
+let timeLeft = 120;
+let timer;
+
+function startTimer(){
+  timer = setInterval(()=>{
+    timeLeft--;
+    let minutes = Math.floor(timeLeft/60);
+    let seconds = timeLeft%60;
+    timerDisplay.innerHTML = `⏳ 0${minutes}:${seconds < 10 ? '0'+seconds : seconds}`;
+    
+    if(timeLeft <= 0){
+      clearInterval(timer);
+      message.innerHTML = "😿 Time's up! Try again!";
+      setTimeout(()=>location.reload(),2000);
     }
+  },1000);
+}
+
+function createPuzzle(){
+  let numbers = [];
+  for(let i=0;i<49;i++){
+    numbers.push(i);
   }
-  
-  reader.onerror = function() {
-    statusDiv.textContent = "❌ File reading error";
-    statusDiv.style.color = "#ff6b9d";
+
+  numbers.sort(()=>Math.random()-0.5);
+
+  numbers.forEach((num,index)=>{
+    const piece = document.createElement("div");
+    piece.classList.add("piece");
+
+    piece.style.backgroundPosition =
+      `${-(num%7)*50}px ${-Math.floor(num/7)*50}px`;
+
+    piece.addEventListener("click",()=>{
+      if(!firstPiece){
+        firstPiece = piece;
+        piece.style.border="2px solid red";
+      }else{
+        swapPieces(firstPiece,piece);
+        firstPiece.style.border="none";
+        firstPiece=null;
+        checkWin();
+      }
+    });
+
+    puzzleContainer.appendChild(piece);
+  });
+
+  startTimer();
+}
+
+function swapPieces(p1,p2){
+  let temp = p1.style.backgroundPosition;
+  p1.style.backgroundPosition = p2.style.backgroundPosition;
+  p2.style.backgroundPosition = temp;
+}
+
+function checkWin(){
+  let correct = true;
+  const allPieces = document.querySelectorAll(".piece");
+
+  allPieces.forEach((piece,index)=>{
+    if(piece.style.backgroundPosition !==
+       `${-(index%7)*50}px ${-Math.floor(index/7)*50}px`){
+      correct=false;
+    }
+  });
+
+  if(correct){
+    clearInterval(timer);
+    message.innerHTML = "🎉 Mabrouk! Duzti Challenge 💖";
+    setTimeout(()=>{
+      document.getElementById("page3").classList.remove("active");
+      document.getElementById("page4").classList.add("active");
+    },2000);
   }
-  
-  reader.readAsArrayBuffer(file);
-});
+}
+
+createPuzzle();
 
 // ===== Quiz =====
 function showQuestion() {
