@@ -30,8 +30,8 @@
 }
 
 .piece{
-  width:66px;
-  height:66px;
+  width:70px;
+  height:70px;
   background-image:url('image.jpg');
   background-size:350px 350px;
   cursor:pointer;
@@ -535,9 +535,10 @@ p {
     <button onclick="loveYes()" style="background: linear-gradient(135deg, #28a745, #20c997); font-size: 24px; padding: 20px 60px;">
       Yes 😻 Bezzaf
     </button>
-    <button onclick="alert('Try again 😉 I knew it... wana tanlovek ktr o bzaaaf🧸💋)" style="background: linear-gradient(135deg, #dc3545, #c82333); font-size: 24px; padding: 20px 60px;">
-      No 😿
-    </button>
+    <button onclick="alert('Try again 😉 I knew it... wana tanlovek ktr o bzaaaf🧸💋')" 
+style="background: linear-gradient(135deg, #dc3545, #c82333); font-size: 24px; padding: 20px 60px;">
+No 😿
+</button>
   </div>
   <div id="loveMsg" style="margin-top: 40px; font-size: 28px; color: #ffebef; display: none;"></div>
 </section>
@@ -718,7 +719,7 @@ function loveYes() {
   createPieces();
   startTimer();
 }, 3500);
-
+}
 // ===== Rain Animation =====
 function createRain() {
   const el = document.createElement('div');
