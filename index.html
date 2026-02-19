@@ -5,20 +5,35 @@
 <title>For Ilyass 💖 Romantic Rain</title>
   
 <style>
-#puzzleContainer{
+#board{
   width:350px;
   height:350px;
   margin:20px auto;
   display:grid;
-  grid-template-columns: repeat(7, 1fr);
-  grid-template-rows: repeat(7, 1fr);
-  gap:2px;
+  grid-template-columns: repeat(7,1fr);
+  grid-template-rows: repeat(7,1fr);
+  border:4px solid white;
+}
+
+.cell{
+  border:1px dashed white;
+}
+
+#pieces{
+  width:360px;
+  margin:20px auto;
+  display:flex;
+  flex-wrap:wrap;
+  gap:5px;
+  justify-content:center;
 }
 
 .piece{
+  width:48px;
+  height:48px;
   background-image:url('image.jpg');
   background-size:350px 350px;
-  cursor:pointer;
+  cursor:grab;
 }
 
 body {
@@ -529,15 +544,19 @@ p {
   <section id="page3" class="page">
 
 <h2 style="font-size:40px;color:#ff4d88;">🧩 Challenge Time 😈</h2>
-<p style="font-size:22px;">Khassek tkmel tswira 9bel 2 d9aye9 ⏳💖</p>
+<p style="font-size:22px;">Jm3i tswira 9bel 5 d9aye9 ⏳💖</p>
 
 <div id="timer" style="font-size:28px;margin:15px;color:#e6005c;">
-  ⏳ 02:00
+ ⏳ 05:00
 </div>
 
-<div id="puzzleContainer"></div>
+<!-- CADRE KHAWI -->
+<div id="board"></div>
 
-<div id="puzzleMessage" style="font-size:24px;margin-top:20px;"></div>
+<!-- PIECES TAHT -->
+<div id="pieces"></div>
+
+<div id="message" style="font-size:22px;margin-top:20px;"></div>
 
 </section>
   
@@ -711,83 +730,91 @@ function createRain() {
 // Increased rain frequency across all pages
 setInterval(createRain, 180);
 
-// ===== Page 3: Secret Code =====
-const puzzleContainer = document.getElementById("puzzleContainer");
-const message = document.getElementById("puzzleMessage");
+// ===== Page 3: Secret Code ===== const board = document.getElementById("board");
+const piecesContainer = document.getElementById("pieces");
+const message = document.getElementById("message");
 const timerDisplay = document.getElementById("timer");
 
-let firstPiece = null;
+let draggedPiece = null;
 let timeLeft = 120;
 let timer;
 
+/* TIMER */
 function startTimer(){
   timer = setInterval(()=>{
     timeLeft--;
-    let minutes = Math.floor(timeLeft/60);
-    let seconds = timeLeft%60;
-    timerDisplay.innerHTML = `⏳ 0${minutes}:${seconds < 10 ? '0'+seconds : seconds}`;
+    let min = Math.floor(timeLeft/60);
+    let sec = timeLeft%60;
+    timerDisplay.innerHTML = `⏳ 0${min}:${sec<10?'0'+sec:sec}`;
     
-    if(timeLeft <= 0){
+    if(timeLeft<=0){
       clearInterval(timer);
-      message.innerHTML = "😿 Time's up! Try again!";
+      message.innerHTML="😿 Time's up!";
       setTimeout(()=>location.reload(),2000);
     }
   },1000);
 }
 
-function createPuzzle(){
-  let numbers = [];
+/* CREATE BOARD */
+function createBoard(){
   for(let i=0;i<49;i++){
-    numbers.push(i);
-  }
+    const cell=document.createElement("div");
+    cell.classList.add("cell");
+    cell.dataset.index=i;
 
-  numbers.sort(()=>Math.random()-0.5);
+    cell.addEventListener("dragover",e=>e.preventDefault());
 
-  numbers.forEach((num,index)=>{
-    const piece = document.createElement("div");
-    piece.classList.add("piece");
-
-    piece.style.backgroundPosition =
-      `${-(num%7)*50}px ${-Math.floor(num/7)*50}px`;
-
-    piece.addEventListener("click",()=>{
-      if(!firstPiece){
-        firstPiece = piece;
-        piece.style.border="2px solid red";
-      }else{
-        swapPieces(firstPiece,piece);
-        firstPiece.style.border="none";
-        firstPiece=null;
-        checkWin();
+    cell.addEventListener("drop",()=>{
+      if(draggedPiece){
+        if(cell.dataset.index==draggedPiece.dataset.index){
+          cell.appendChild(draggedPiece);
+          draggedPiece.draggable=false;
+          checkWin();
+        }
       }
     });
 
-    puzzleContainer.appendChild(piece);
+    board.appendChild(cell);
+  }
+}
+
+/* CREATE PIECES */
+function createPieces(){
+  let numbers=[];
+  for(let i=0;i<49;i++){numbers.push(i);}
+  numbers.sort(()=>Math.random()-0.5);
+
+  numbers.forEach(num=>{
+    const piece=document.createElement("div");
+    piece.classList.add("piece");
+    piece.draggable=true;
+    piece.dataset.index=num;
+
+    piece.style.backgroundPosition=
+      `${-(num%7)*50}px ${-Math.floor(num/7)*50}px`;
+
+    piece.addEventListener("dragstart",()=>{
+      draggedPiece=piece;
+    });
+
+    piecesContainer.appendChild(piece);
   });
-
-  startTimer();
 }
 
-function swapPieces(p1,p2){
-  let temp = p1.style.backgroundPosition;
-  p1.style.backgroundPosition = p2.style.backgroundPosition;
-  p2.style.backgroundPosition = temp;
-}
-
+/* CHECK WIN */
 function checkWin(){
-  let correct = true;
-  const allPieces = document.querySelectorAll(".piece");
+  const cells=document.querySelectorAll(".cell");
+  let correct=true;
 
-  allPieces.forEach((piece,index)=>{
-    if(piece.style.backgroundPosition !==
-       `${-(index%7)*50}px ${-Math.floor(index/7)*50}px`){
+  cells.forEach(cell=>{
+    if(!cell.firstChild){
       correct=false;
     }
   });
 
   if(correct){
     clearInterval(timer);
-    message.innerHTML = "🎉 Mabrouk! Duzti Challenge 💖";
+    message.innerHTML="🎉 Mabrouk! Kmleti Puzzle 💖";
     setTimeout(()=>{
       document.getElementById("page3").classList.remove("active");
       document.getElementById("page4").classList.add("active");
@@ -795,7 +822,10 @@ function checkWin(){
   }
 }
 
-createPuzzle();
+/* START */
+createBoard();
+createPieces();
+startTimer();
 
 // ===== Quiz =====
 function showQuestion() {
